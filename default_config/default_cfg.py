@@ -1,6 +1,6 @@
 import os.path as osp
 from yacs.config import CfgNode as CN
-from bim_spatial_queries.core_module.utils import common
+from core_module.utils import common
 import yaml
 
 

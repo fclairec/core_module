@@ -1,11 +1,11 @@
 import pandas as pd
-from bim_spatial_queries.archive.spatial_instance_queries import get_containment_ray_trace
-from bim_spatial_queries.core_module.graph.DesignGraph import DesignGraph
-from bim_spatial_queries.core_module.default_config.config import enrichment_feature_dict, transition_element_types
-from bim_spatial_queries.core_module.pem.pem import load_pem
+from archive.spatial_instance_queries import get_containment_ray_trace
+from core_module.graph.DesignGraph import DesignGraph
+from core_module.default_config.config import enrichment_feature_dict, transition_element_types
+from core_module.pem.pem import load_pem
 from pathlib import Path
-from bim_spatial_queries.visualisation.SurfaceModel import SurfaceModel
-from bim_spatial_queries.default_config.ifc_parsing_config import ifc_parsing_dict, get_relevant_ifc_classes
+from visualisation.SurfaceModel import SurfaceModel
+from default_config.ifc_parsing_config import ifc_parsing_dict, get_relevant_ifc_classes
 
 def helios_prep_model(cfg):
     #### Generate second surface model to easily select waypoints in cloud compare - requirement: guids of ceiling elements)

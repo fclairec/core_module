@@ -1,10 +1,10 @@
-from bim_spatial_queries.core_module.default_config.config import feature_tasks
-from bim_spatial_queries.core_module.geometric_utils.geometric_features import get_geometric_features
+from core_module.default_config.config import feature_tasks
+from core_module.utils_geometric.geometric_features import get_geometric_features
 import pandas as pd
 from typing import List, Dict, Union
-from bim_spatial_queries.utils.BuildingFace import BuildingFace
-from bim_spatial_queries.utils.BuildingElement import BuildingElement
-from bim_spatial_queries.core_module.default_config.config import sp_feature_translation_dict
+from utils.BuildingFace import BuildingFace
+from utils.BuildingElement import BuildingElement
+from core_module.default_config.config import sp_feature_translation_dict
 
 
 def geom_features_to_file(cfg, instances: Dict[str, List[Union[BuildingFace, BuildingElement]]], exists=True):

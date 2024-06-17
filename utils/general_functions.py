@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from bim_spatial_queries.core_module.default_config.config import internali2internalt
-from bim_spatial_queries.core_module.default_config.config import current_models
-from bim_spatial_queries.core_module.default_config.default_cfg import update_config_value
+from core_module.default_config.config import internali2internalt
+from core_module.default_config.config import current_models
+from core_module.default_config.default_cfg import update_config_value
 import os
 import shutil
 

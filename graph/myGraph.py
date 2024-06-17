@@ -3,12 +3,12 @@ import numpy as np
 from collections import namedtuple
 from plyfile import PlyData, PlyElement
 from pathlib import Path
-from bim_spatial_queries.core_module.default_config.config import sp_feature_translation_dict, int2color, enrichment_feature_dict, internali2internalt
+from core_module.default_config.config import sp_feature_translation_dict, int2color, enrichment_feature_dict, internali2internalt
 import copy
 import os
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-from bim_spatial_queries.core_module.pem.pem import load_pem
+from core_module.pem.pem import load_pem
 
 
 class MyGraph():

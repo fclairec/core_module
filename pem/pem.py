@@ -2,13 +2,12 @@ from typing import List, Union, Dict
 import pandas as pd
 from pathlib import Path
 import numpy as np
-from bim_spatial_queries.utils.BuildingElement import BuildingElement
-from bim_spatial_queries.utils.BuildingSubElement import BuildingSubElement
-from bim_spatial_queries.utils.BuildingFace import BuildingFace
+from utils.BuildingElement import BuildingElement
+from utils.BuildingSubElement import BuildingSubElement
+from utils.BuildingFace import BuildingFace
 
-# TODO get rid of
-from bim_spatial_queries.core_module.default_config.config import transition_element_types, internali2internalt
-from bim_spatial_queries.core_module.utils.general_functions import invert_dict_simple
+from core_module.default_config.config import transition_element_types, internali2internalt
+from core_module.utils.general_functions import invert_dict_simple
 
 
 def sort_pairs(pairs: List[tuple], relevant_el_type: str, pem: pd.DataFrame) -> np.ndarray:
