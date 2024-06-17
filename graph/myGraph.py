@@ -8,7 +8,7 @@ import copy
 import os
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-from core_module.pem.pem import load_pem
+from core_module.pem.io import load_pem
 
 
 class MyGraph():

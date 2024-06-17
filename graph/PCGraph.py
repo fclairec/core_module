@@ -1,8 +1,8 @@
 import networkx as nx
 import numpy as np
 import pandas as pd
-from bim_spatial_queries.core_module.graph.myGraph import MyGraph
-from bim_spatial_queries.core_module.default_config.config import sp_feature_translation_dict
+from core_module.graph.myGraph import MyGraph
+from core_module.default_config.config import sp_feature_translation_dict
 
 
 def retrieve_initial_label(spg_label, map_filename):

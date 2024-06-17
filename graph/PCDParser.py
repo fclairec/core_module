@@ -7,7 +7,7 @@ from core_module.utils.general_functions import to_open3d, from_open3d
 from plyfile import PlyData, PlyElement
 from pathlib import Path
 
-from core_module.pem.pem import load_pem
+from core_module.pem.io import load_pem
 
 """DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, os.path.join(DIR_PATH, ''))
