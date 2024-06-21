@@ -1,10 +1,14 @@
 import pandas as pd
 
 
-def save_pem(pem_file, pem):
-    pem.index.name = "guid_int"
-    pem = pem.reset_index()
-    pem.to_csv(pem_file, index=False)
+def save_pem(pem_file, pem, mode="design"):
+    if mode == "design" or mode == "d":
+        pem.index.name = "guid_int"
+        pem = pem.reset_index()
+        pem.to_csv(pem_file, index=False)
+
+    else:
+        pem.to_csv(pem_file, index=True)
 
 
 def load_pem(pem_file, mode="design"):
