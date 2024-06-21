@@ -2,7 +2,7 @@ from core_module.graph.myGraph import MyGraph
 import pandas as pd
 import numpy as np
 import networkx as nx
-from core_module.pem.pem import load_pem
+from core_module.pem.io import load_pem
 
 
 class DesignGraph(MyGraph):

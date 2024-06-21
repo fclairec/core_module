@@ -13,6 +13,7 @@ current_models = {
 "B_test": "building_B_cms_test.ifc",
 "Y": "building_Y.ifc",
 "C_test": "building_C_dhub_eg_selection_test.ifc",
+"C_bug": "building_C_dhub_eg_selection_bug2.ifc",
 "A_l-test": "building_A_003_m_l-shape_test.ifc",
 "A_graph-test": "building_A_003_m_graph-test.ifc",
 }

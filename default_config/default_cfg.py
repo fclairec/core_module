@@ -27,7 +27,10 @@ _C.design.default_spanning_types = ["Wall", "Ceiling", 'Floor', 'Column']
 
 _C.design.final_adjacency_file = osp.join(_C.design.root_dir, 'd_adjacencies_final.csv')
 
-_C.design.d_tol = 0.2
+_C.design.d_tol = CN()
+_C.design.d_tol.elements = 0.2
+_C.design.d_tol.face = 0.02 # 2cm
+_C.design.d_tol.merges = 0.02 # 2cm
 
 _C.built = CN()
 _C.built.root_dir = osp.join(_C.root_dir, "b")
@@ -81,7 +84,10 @@ _C.built.default_spanning_types = ["Wall", "Ceiling", 'Floor', 'Column']
 
 _C.built.ceiling_elements_guid = []
 
-_C.built.d_tol = 0.2
+_C.built.d_tol = CN()
+_C.built.d_tol.elements = 0.2
+_C.built.d_tol.face = 0.02 # 2cm
+_C.built.d_tol.merges = 0.02 # 2cm
 _C.built.final_adjacency_file = osp.join(_C.design.root_dir, 'd_adjacencies_final.csv')
 
 

@@ -114,14 +114,23 @@ def prepare_project_dirs(cfg):
 
     project_configs = []
     for project in cfg.building_projects:
-        d_ifc = os.path.join(cfg.root_root_dir, current_models[project])
-        b_ifc = os.path.join(cfg.root_root_dir, current_models[project])
+        if project in current_models.keys() and cfg.design.ifc_file is None:
+            ifc_file_name = current_models[project]
+        elif cfg.design.ifc_file is not None:
+            print("overwriting project name with ifc file name")
+            ifc_file_name_d = cfg.design.ifc_file
+            ifc_file_name_b = cfg.built.ifc_file
+        else:
+            print(f"Project {project} not found in current_models. Please provide the ifc file name.")
+            raise SystemExit
+        d_ifc = os.path.join(cfg.root_root_dir, "ifc_models", ifc_file_name_d)
+        b_ifc = os.path.join(cfg.root_root_dir, "ifc_models", ifc_file_name_b)
         waypoint_file = os.path.join(cfg.root_root_dir, "waypoint_files", project+f"_{cfg.built.waypoints}")
 
         cfg = update_config_value(cfg, ["project_name", project,
                                   "root_dir", os.path.join(cfg.experiment_dir, project),
-                                  "design.ifc_file", current_models[project],
-                                  "built.ifc_file", current_models[project]])
+                                  "design.ifc_file", ifc_file_name_d,
+                                  "built.ifc_file", ifc_file_name_b])
 
 
 
@@ -133,8 +142,8 @@ def prepare_project_dirs(cfg):
             os.makedirs(b_dir)
 
         # copy ifc into to d and b folders
-        shutil.copy(d_ifc, os.path.join(d_dir, current_models[project]))
-        shutil.copy(b_ifc, os.path.join(b_dir, current_models[project]))
+        shutil.copy(d_ifc, os.path.join(d_dir, ifc_file_name_d))
+        shutil.copy(b_ifc, os.path.join(b_dir, ifc_file_name_b))
         shutil.copy(waypoint_file, cfg.built.manual_waypoints_selection)
 
 
