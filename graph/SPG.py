@@ -3,6 +3,7 @@ from scipy.spatial import Delaunay
 from numpy import linalg as LA
 import os
 import h5py
+import trimesh
 
 
 class SPG:
@@ -27,6 +28,7 @@ class SPG:
         self.graph_sp["pca1"] = np.zeros((self.n_com, 3), dtype='float32')
         self.graph_sp["pca2"] = np.zeros((self.n_com, 3), dtype='float32')
         self.graph_sp["pca3"] = np.zeros((self.n_com, 3), dtype='float32')
+        self.graph_sp["sp_normals"] = np.zeros((self.n_com, 3), dtype='float32')
         self.graph_sp["sp_extents"] = np.zeros((self.n_com, 3), dtype='float32')
         self.graph_sp["sp_labels"] = np.zeros((self.n_com, self.n_labels + 1), dtype='uint32')
 
@@ -132,7 +134,17 @@ class SPG:
             else:
                 ev = LA.eig(np.cov(np.transpose(xyz_sp), rowvar=True))
                 ev = -np.sort(-ev[0])  # descending order
-                self.graph_sp["sp_centroids"][i_com] = np.mean(xyz_sp, axis=0)
+                try:
+                    point_cloud = trimesh.points.PointCloud(xyz_sp)
+                    aabb = point_cloud.bounds
+
+                    min_point = aabb[0]
+                    max_point = aabb[1]
+
+                    center_point = (min_point + max_point) / 2
+                    self.graph_sp["sp_centroids"][i_com] = center_point
+                except:
+                    self.graph_sp["sp_centroids"][i_com] = np.mean(xyz_sp, axis=0)
                 try:
                     self.graph_sp["sp_length"][i_com] = ev[0]
                 except TypeError:
@@ -154,6 +166,8 @@ class SPG:
                 self.graph_sp["pca1"][i_com] = pca[0]
                 self.graph_sp["pca2"][i_com] = pca[1]
                 self.graph_sp["pca3"][i_com] = pca[2]
+
+                self.graph_sp["sp_normals"][i_com] = np.cross(pca[0], pca[1])
 
                 centered_data = xyz_sp - np.mean(xyz_sp, axis=0)
                 max_values = np.max(centered_data @ pca.T, axis=0)
