@@ -160,6 +160,8 @@ def update_new_instances_to_pem(pem_file: str, instances: Dict[str, List[Union[B
     if "parent_element" not in pem.columns:
         pem["parent_element"] = np.nan
         pem["composing_elements"] = np.nan
+        pem["room_id"] = np.nan
+
 
     if mode == "split":
         for key in ["faces", "subelements"]:
@@ -186,6 +188,7 @@ def update_new_instances_to_pem(pem_file: str, instances: Dict[str, List[Union[B
                 new_face_row.loc[0, "spanning_element"] = 0
 
                 new_face_row.loc[0, "parent_element"] = single_room_instance.parent_mre
+                new_face_row.loc[0, "room_id"] = single_room_instance.parent_space
 
                 # change interface instance_guid_int to a global one
                 single_room_instance.update_guid_int(new_guid_int)
@@ -231,6 +234,7 @@ def update_new_instances_to_pem(pem_file: str, instances: Dict[str, List[Union[B
             mre_id_int_lst = aggregate_instance.parent_mres
             mre_id_int = ";".join(str(x) for x in mre_id_int_lst)
             new_face_row.loc[0, "parent_element"] = mre_id_int
+            new_face_row.loc[0, "room_id"] = aggregate_instance.parent_spaces[0] # we don't cover fusion across spaces
 
             composing_elements = aggregate_instance.composing_elements
             new_face_row.loc[0, "composing_elements"] = ";".join(str(x) for x in composing_elements)

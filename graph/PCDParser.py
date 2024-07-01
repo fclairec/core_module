@@ -6,8 +6,9 @@ from core_module.utils.general_functions import to_open3d, from_open3d
 
 from plyfile import PlyData, PlyElement
 from pathlib import Path
+import laspy
 
-from core_module.pem.io import load_pem
+from core_module.pem.io import load_pem, save_pem
 
 """DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, os.path.join(DIR_PATH, ''))
@@ -130,15 +131,15 @@ class PCD:
                 # delete the old project_element_map_file
                 os.remove(project_element_map_file)
 
-                result.to_csv(project_element_map_file, index=True, header=True, sep=',')
-
+                #result.to_csv(project_element_map_file, index=True, header=True, sep=',')
+                save_pem(project_element_map_file, result, mode="b")
                 a = 0
             else:
                 # rename column instance_label_int_new to spg_label in new_vs_old
                 new_vs_old = new_vs_old.rename(columns={'new': 'spg_label', 'old': 'guid_int'})
                 # save to file
-                new_vs_old.to_csv(project_element_map_file, index=True, header=True, sep=',')
-
+                #new_vs_old.to_csv(project_element_map_file, index=True, header=True, sep=',')
+                save_pem(project_element_map_file, new_vs_old, mode="b")
         self.instance_labels = new_instance_labels
         self.preprocessing_steps_performed.append('reindex_labels')
 
@@ -192,14 +193,40 @@ class PCD:
         # assemble file name with all preprocessing steps in self.preprocessing_steps_performed concatenated to string
         ply.write(downsampled_file_name)
 
+    def output_point_cloud_las(self, project_element_map_file, downsampled_file_name, col_id="spg_label"):
+        # Convert point data to LAS format
+        num_points = len(self.points)
+
+        # Create a new LAS file
+        header = laspy.LasHeader(point_format=3, version="1.2")
+        las = laspy.LasData(header)
+
+        # Assign point coordinates
+        las.x = self.points[:, 0]
+        las.y = self.points[:, 1]
+        las.z = self.points[:, 2]
+
+        # Assign instance labels (s) and additional scalar (s1)
+        las.add_extra_dim(laspy.ExtraBytesParams(name="s", type=np.int32))
+        las.add_extra_dim(laspy.ExtraBytesParams(name="s1", type=np.int32))
+        las.s = self.instance_labels[:, 0]
+
+        # Add semantic type as additional channel
+        scalars = self.add_scalars_from_map(project_element_map_file=project_element_map_file, value="type_int",
+                                            id_column=col_id)
+        las.s1 = scalars
+
+        # Write the LAS file
+        las.write(downsampled_file_name)
+
     def add_scalars_from_map(self, project_element_map_file, value, id_column="spg_label"):
         """ find the class type point cloud according to the instance label"""
         if self.pc_type == "bim_sampled":
-            project_element_map = load_pem(project_element_map_file, mode="d")
+            pem = load_pem(project_element_map_file, mode="d")
         else:
-            project_element_map = pd.read_csv(project_element_map_file, sep=',', header=0, index_col=0)
+            pem = load_pem(project_element_map_file, mode="b")
             # delete all sp_label that are -1. and make spg_label the index
-            project_element_map = project_element_map[project_element_map[id_column] != -1].set_index(id_column)
+            pem = pem[pem[id_column] != -1].set_index(id_column)
         # find the class type point cloud according to the instance label
         scalars = []
         if value == "space_id":
@@ -207,7 +234,7 @@ class PCD:
                 "careful when visualizing the space_id. Doors are assigned to muliples spaces and will receive a numpy based value here.")
         for i in self.instance_labels:
             try:
-                s = project_element_map.loc[i[0], value]
+                s = pem.loc[i[0], value]
             except:
                 print(f"scalar value {value}:{i} not found in project element map. Review processing steps")
             scalars.append(s)
@@ -264,7 +291,8 @@ class PCD:
 
             pem = pd.read_csv(built_pem_file, sep=',', header=0, index_col=0)
             prem_room = pem[pem['spg_label'].isin(spg_labels)]
-            prem_room.to_csv(subset_pem_filename, index=True, header=True, sep=',')
+            #prem_room.to_csv(subset_pem_filename, index=True, header=True, sep=',')
+            save_pem(subset_pem_filename, prem_room, mode="b")
 
             room_pcd.reindex_labels(True, subset_pem_filename, 2)
             room_pcd.output_point_cloud(subset_pem_filename, subset_pcd_filename, col_id="spg_label")

@@ -27,7 +27,10 @@ _C.design.default_spanning_types = ["Wall", "Ceiling", 'Floor', 'Column']
 
 _C.design.final_adjacency_file = osp.join(_C.design.root_dir, 'd_adjacencies_final.csv')
 
-_C.design.d_tol = 0.2
+_C.design.d_tol = CN()
+_C.design.d_tol.elements = 0.2
+_C.design.d_tol.face = 0.02 # 2cm
+_C.design.d_tol.merges = 0.02 # 2cm
 
 _C.built = CN()
 _C.built.root_dir = osp.join(_C.root_dir, "b")
@@ -81,7 +84,10 @@ _C.built.default_spanning_types = ["Wall", "Ceiling", 'Floor', 'Column']
 
 _C.built.ceiling_elements_guid = []
 
-_C.built.d_tol = 0.2
+_C.built.d_tol = CN()
+_C.built.d_tol.elements = 0.2
+_C.built.d_tol.face = 0.02 # 2cm
+_C.built.d_tol.merges = 0.02 # 2cm
 _C.built.final_adjacency_file = osp.join(_C.design.root_dir, 'd_adjacencies_final.csv')
 
 
@@ -108,14 +114,14 @@ _C.built.pc_graph_viz_file = osp.join(_C.built.root_dir, "b_my_graph.ply")
 _C.built.b_node_color_legend_file = osp.join(_C.built.root_dir, "b_node_color_legend.png")
 _C.built.b_downsampled_pcd = osp.join(_C.built.root_dir, "b_downsampled_pcd.ply")
 _C.built.features_file = osp.join(_C.built.root_dir,"b_features.csv")
-_C.built.voxel_size = 0.1
-_C.built.d_max = 0.5
+_C.built.voxel_size = 0.01
+_C.built.d_max = 0.02 # can not be lower than voxel size
 
 # make dataset splits
 _C.built.splits = CN()
 _C.built.splits.dir_template = osp.join(_C.built.root_dir, "split_{}_{}_{}_{}") #subset key, room_nb, rotation(x30/y30), translation(x10,x-10)
 _C.built.splits.dirs = []
-_C.built.splits.split_pcd = "pcd.ply"
+_C.built.splits.split_pcd = "pcd.las"
 _C.built.splits.split_pem = "project_element_map.csv"
 _C.built.splits.split_feat = "features.csv"
 _C.built.splits.split_spg = "spg.h5"
