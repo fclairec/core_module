@@ -58,6 +58,7 @@ sp_feature_translation_dict = {
     "pca": {"SPG": ["pca1", "pca2", "pca3"],
             "myGraph": ["pca1x", "pca1y", "pca1z", "pca2x", "pca2y", "pca2z", "pca3x", "pca3y", "pca3z"]},
     "extents": {"SPG": ["sp_extents"], "myGraph": ["extent_pca1", "extent_pca2", "extent_pca3"]},
+    "normal": {"SPG": ["sp_normals"], "myGraph": ["normal_x", "normal_y", "normal_z"]},
 }
 
 enrichment_feature_dict = {

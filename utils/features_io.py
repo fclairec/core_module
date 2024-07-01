@@ -17,7 +17,7 @@ def geom_features_to_file(cfg, instances: Dict[str, List[Union[BuildingFace, Bui
 
     for i_ in instances:
         sampled_points = i_.sample_points(density=100)
-        geometric_features = get_geometric_features(feature_tasks, sampled_points)
+        geometric_features = get_geometric_features(feature_tasks, sampled_points, bbox=i_.shape.bbox)
         for feature_name, value in geometric_features.items():
             column_names = sp_feature_translation_dict[feature_name]["myGraph"]
             features_df.loc[i_.guid_int, column_names] = value
