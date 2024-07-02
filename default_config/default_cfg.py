@@ -51,6 +51,9 @@ _C.design.shapes_pkl = osp.join(_C.design.root_dir, 'd_geometries.pkl')
 _C.design.sampled_pcd_filename = osp.join(_C.design.root_dir, 'd_sampled_pcd.ply')
 _C.design.class_colors_fp = osp.join(_C.design.root_dir, f"_colors.json")
 _C.design.faces_filename = osp.join(_C.design.root_dir, 'd_faces.obj')
+_C.design.space_adj_file = osp.join(_C.design.root_dir, 'd_space_adj.csv')
+_C.design.space_graph = osp.join(_C.design.root_dir, 'd_space_graph.graphml')
+_C.design.space_graph_viz = osp.join(_C.design.root_dir, 'd_space_graph.png')
 
 _C.design.sampling_density = 400
 _C.design.voxel_size = 0.1
@@ -63,7 +66,7 @@ _C.design.f_shapes_pkl = osp.join(_C.design.root_dir, 'd_f_geometries.pkl')
 # assemble graph
 _C.design.face_graph_file = osp.join(_C.design.root_dir, "d_my_graph_faces.graphml")
 _C.design.face_graph_viz_file = osp.join(_C.design.root_dir, "d_my_graph_faces_viz.ply")
-_C.design.d_node_color_legend_file = osp.join(_C.design.root_dir, "d_node_color_legend.png")
+_C.design.node_color_legend_file = osp.join(_C.design.root_dir, "d_node_color_legend.png")
 
 
 # prepare helios
@@ -111,7 +114,7 @@ _C.built.simulation.total_trajectory_filename = osp.join(_C.built.root_dir, "ful
 _C.built.spg_file = osp.join(_C.built.root_dir, "spg.h5")
 _C.built.pc_graph_file = osp.join(_C.built.root_dir, "my_graph.graphml")
 _C.built.pc_graph_viz_file = osp.join(_C.built.root_dir, "b_my_graph.ply")
-_C.built.b_node_color_legend_file = osp.join(_C.built.root_dir, "b_node_color_legend.png")
+_C.built.node_color_legend_file = osp.join(_C.built.root_dir, "b_node_color_legend.png")
 _C.built.b_downsampled_pcd = osp.join(_C.built.root_dir, "b_downsampled_pcd.ply")
 _C.built.features_file = osp.join(_C.built.root_dir,"b_features.csv")
 _C.built.voxel_size = 0.01
@@ -168,6 +171,10 @@ def update_dependent_paths(cfg):
     cfg.design.viz_file = osp.join(_C.design.root_dir, "d_my_graph.ply")
     cfg.design.adjacency_file = osp.join(_C.design.root_dir, 'd_adjacencies.csv')
     cfg.design.containment_file = osp.join(_C.design.root_dir, 'd_containments.csv')
+    cfg.design.space_adj_file = osp.join(_C.design.root_dir, 'd_space_adj.csv')
+    cfg.design.space_graph = osp.join(_C.design.root_dir, 'd_space_graph.graphml')
+    cfg.design.space_graph_viz = osp.join(_C.design.root_dir, 'd_space_graph.png')
+
     cfg.design.features_file = osp.join(_C.design.root_dir, 'd_features.csv')
     cfg.design.pem_file = osp.join(_C.design.root_dir, 'd_project_element_map.csv')
     cfg.design.surface_file_path = osp.join(_C.design.root_dir, 'd_surface.obj')
@@ -187,7 +194,7 @@ def update_dependent_paths(cfg):
     # assemble graph
     cfg.design.face_graph_file = osp.join(_C.design.root_dir, "d_my_graph_faces.graphml")
     cfg.design.face_graph_viz_file = osp.join(_C.design.root_dir, "d_my_graph_faces_viz.ply")
-    cfg.design.d_node_color_legend_file = osp.join(_C.design.root_dir, "d_node_color_legend.png")
+    cfg.design.node_color_legend_file = osp.join(_C.design.root_dir, "d_node_color_legend.png")
 
 
     # prepare helios
@@ -220,7 +227,7 @@ def update_dependent_paths(cfg):
     cfg.built.spg_file = osp.join(_C.built.root_dir, "spg.h5")
     cfg.built.pc_graph_file = osp.join(_C.built.root_dir, "my_graph.graphml")
     cfg.built.pc_graph_viz_file = osp.join(_C.built.root_dir, "b_my_graph.ply")
-    cfg.built.b_node_color_legend_file = osp.join(_C.built.root_dir, "b_node_color_legend.png")
+    cfg.built.node_color_legend_file = osp.join(_C.built.root_dir, "b_node_color_legend.png")
     cfg.built.b_downsampled_pcd = osp.join(_C.built.root_dir, "b_downsampled_pcd.ply")
     cfg.built.b_features_file = osp.join(_C.built.root_dir,"b_features.csv")
 
