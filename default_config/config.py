@@ -105,7 +105,7 @@ discipline_colors = {
 }
 
 epsilon_threshold = {
-    'ARC': 0.15,
+    'ARC': 0.2,
     'PLB': 0.5,
     'VTL': 0.5,
     'EL': 0.5,
