@@ -36,7 +36,7 @@ def get_space_graph(cfg):
     SpaceGraph = DesignGraph()
 
     SpaceGraph.assemble_graph_files(cfg, adjacency_type="element", faces=False, by_guid_int=selected_guid_ints, feats=False)
-    SpaceGraph.enrich_graph(cfg.pem_file, enrichment_feature_dict, cfg.b_node_color_legend_file)
+    SpaceGraph.enrich_graph(cfg.pem_file, enrichment_feature_dict, cfg.node_color_legend_file)
     SpaceGraph.graph_to_pkl(cfg.space_graph)
     # plot a networkx graph
     SpaceGraph.plot_graph("space graph", cfg.space_graph_viz)
