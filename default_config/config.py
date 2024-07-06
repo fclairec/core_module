@@ -100,7 +100,17 @@ discipline_colors = {
     'PLB': [255, 0, 0, 1.0],
     'VTL': [0, 255, 0, 1.0],
     'EL': [255, 255, 0, 1.0],
-    'FUR': [0, 255, 255, 1.0]
+    'FUR': [0, 255, 255, 1.0],
+    'Rest': [255, 0, 255, 1.0],
+}
+
+epsilon_threshold = {
+    'ARC': 0.2,
+    'PLB': 0.5,
+    'VTL': 0.5,
+    'EL': 0.5,
+    'FUR': 0.7,
+    'Rest': 0.5,
 }
 
 """ 'ControlElement': ['IfcActuator', 'IfcController', 'IfcSensor', 'IfcUnitaryControlElement', 'IfcUnitaryEquipment'],
