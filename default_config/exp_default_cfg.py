@@ -46,7 +46,9 @@ _C.built.d_tol.merges = 0.02
 _C.built.voxel_size = 0.01
 _C.built.d_max = 0.02
 _C.built.waypoints = "general.txt"
-_C.built.simulation = False
+_C.built.simulation = CN()
+_C.built.simulation.test = False
+
 _C.built.room_nb = [1]
 _C.built.rotations = [[0, 0, 0]]
 _C.built.translations = [[0, 0, 0]]
