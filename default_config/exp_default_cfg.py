@@ -59,8 +59,12 @@ _C.built.ceiling_elements_guid = ["3kOisf8iHDQ9b60gokQk6c", "2NoCROD1P8KxbahrIQp
 def dict_to_flat_list(d, mode):
     flat_list = []
     for key, value in d.items():
-        flat_list.append(mode+"."+key)
-        flat_list.append(value)
+        if isinstance(value, dict):
+            sub_list = dict_to_flat_list(value, mode+"."+key)
+            flat_list = flat_list + sub_list
+        else:
+            flat_list.append(mode+"."+key)
+            flat_list.append(value)
     return flat_list
 
 def update_exp_config(cfg_t, cfg_args, ensure_dir=True):
