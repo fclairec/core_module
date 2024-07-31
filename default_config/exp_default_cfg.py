@@ -48,6 +48,7 @@ _C.built.d_max = 0.02
 _C.built.waypoints = "general.txt"
 _C.built.simulation = CN()
 _C.built.simulation.test = False
+_C.built.simulation.accuracy = 0.005
 
 _C.built.room_nb = [1]
 _C.built.rotations = [[0, 0, 0]]
