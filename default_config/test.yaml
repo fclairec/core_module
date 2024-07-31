@@ -1,0 +1,35 @@
+seed: 43
+building_projects: ["A", "B"]
+design:
+  1:
+    disciplines: ["A"]
+    sampling_density: 800
+    voxel_size: 0.01
+  2:
+    disciplines: ["AVPFE"]
+    sampling_density: 800
+    voxel_size: 0.01
+
+built:
+  1:
+    disciplines: ["A"]
+    voxel_size: 0.01
+    ceiling_elements_guid: ["3kOisf8iHDQ9b60gokQk6c", "2NoCROD1P8KxbahrIQpFr7", "3L2L5EHTz56ef40SrZlEr6", "3L2L5EHTz56ef40SrZlEr5", "3BmeJtEDj3AQO77Os2w6ZR", "0P7YxrKvv9pAandyAj8CEC", "08Kju84ofEuAMc6WrE1A36"]
+    waypoints: "general.txt"
+    simulation:
+      test_pcd: False
+    experiment_setup:
+      room_nb: [1,2,3,5]
+      rotations: [[0, 0, 0]]
+      translations: [[0, 0, 0]]
+  2:
+    disciplines: ["AVPFE"]
+    voxel_size: 0.01
+    ceiling_elements_guid: [ "3kOisf8iHDQ9b60gokQk6c", "2NoCROD1P8KxbahrIQpFr7", "3L2L5EHTz56ef40SrZlEr6", "3L2L5EHTz56ef40SrZlEr5", "3BmeJtEDj3AQO77Os2w6ZR", "0P7YxrKvv9pAandyAj8CEC", "08Kju84ofEuAMc6WrE1A36" ]
+    waypoints: "general.txt"
+    simulation:
+      test_pcd: False
+    experiment_setup:
+      room_nb: [ 1,2,3,5 ]
+      rotations: [ [ 0, 0, 0 ] ]
+      translations: [ [ 0, 0, 0 ] ]
