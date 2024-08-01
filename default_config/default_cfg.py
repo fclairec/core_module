@@ -273,10 +273,7 @@ def update_dependent_paths(cfg):
 def update_config_value(cfg, cfg_args, ensure_dir=True):
     cfg.defrost()
     cfg.merge_from_list(cfg_args)
-    cfg = update_dependent_paths(cfg)
     cfg.freeze()
-    common.ensure_dir(cfg.root_dir)
-    common.ensure_dir(cfg.log_dir)
     return cfg
 
 

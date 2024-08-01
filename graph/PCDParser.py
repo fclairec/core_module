@@ -46,25 +46,11 @@ class PCD:
             module = 0
             print(f"No module named '{module_name}' available.")
 
-        self.pcd_files = module.init_pcd_format(pcd_paths)
-        points = []
-        instance_labels = []
 
         for pcd_file in self.pcd_files:
-            generic_load = pd.read_csv(pcd_file, sep=module.seperator, header=0)
-            #set header as 'X Y Z intensity echoWidth returnNumber numberOfReturns fullwaveIndex hitObjectId class gpsTime\n')
-            generic_load.columns = ['X', 'Y', 'Z', 'intensity', 'echoWidth', 'returnNumber', 'numberOfReturns', 'fullwaveIndex', 'hitObjectId', 'class', 'gpsTime']
-            points_i = np.ascontiguousarray(generic_load[module.point_column_names], dtype='float32')
-            instance_labels_i = np.ascontiguousarray(generic_load[module.instance_label_column_name], dtype='uint32')
-            points.append(points_i)
-            instance_labels.append(instance_labels_i)
-        self.points = np.vstack(points)
-        self.instance_labels = np.vstack(instance_labels)
-        if module.colors_column_names is not None:
-            self.colors = np.ascontiguousarray(generic_load[module.colors_column_names], dtype='uint8')
-        else:
-            self.colors = np.zeros((self.points.shape[0], 3), dtype='uint8')
-        del generic_load
+            points, instance_labels = module.load(pcd_file)
+
+            self.incrememtal_pc_addition(points, instance_labels)
 
     def incrememtal_pc_addition(self, points, instance_labels):
         if self.points is None:
@@ -193,12 +179,14 @@ class PCD:
         # assemble file name with all preprocessing steps in self.preprocessing_steps_performed concatenated to string
         ply.write(downsampled_file_name)
 
-    def output_point_cloud_las(self, project_element_map_file, downsampled_file_name, col_id="spg_label"):
+    def output_point_cloud_las(self, downsampled_file_name, project_element_map_file=None, col_id="spg_label"):
         # Convert point data to LAS format
         num_points = len(self.points)
 
         # Create a new LAS file
-        header = laspy.LasHeader(point_format=3, version="1.2")
+        header = laspy.LasHeader(version="1.4", point_format=6)
+        header.scales = [0.00001, 0.00001, 0.00001]  # X, Y, Z scales
+
         las = laspy.LasData(header)
 
         # Assign point coordinates
@@ -212,9 +200,10 @@ class PCD:
         las.s = self.instance_labels[:, 0]
 
         # Add semantic type as additional channel
-        scalars = self.add_scalars_from_map(project_element_map_file=project_element_map_file, value="type_int",
+        if project_element_map_file is not None:
+            scalars = self.add_scalars_from_map(project_element_map_file=project_element_map_file, value="type_int",
                                             id_column=col_id)
-        las.s1 = scalars
+            las.s1 = scalars
 
         # Write the LAS file
         las.write(downsampled_file_name)
