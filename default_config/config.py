@@ -1,26 +1,7 @@
 feature_tasks = ["centroid", "pca_and_extents"]
-mre_element_types = ["Wall", "Ceiling", 'Floor', 'Column', 'mech_plumb']  # "Floor", "Ceiling",
+mre_element_types = ["Wall", "Ceiling", 'Floor', 'Column']  # "Floor", "Ceiling",
 transition_element_types = ['Door', 'Window', 'Stair']
-# excluded'IfcOpeningElement',
 
-# current ifc models
-current_models = {
-"A" : "building_A_003_m.ifc",
-"B" : "building_B_cms.ifc",
-"C" : "building_C_dhub_eg_selection.ifc",
-"A_test": "building_A_test.ifc",
-"A_chairs": "building_A_chairs.ifc",
-"B_test": "building_B_cms_test.ifc",
-"Y": "building_Y.ifc",
-"C_test": "building_C_dhub_eg_selection_test.ifc",
-"C_bug": "building_C_dhub_eg_selection_bug2.ifc",
-"A_l-test": "building_A_003_m_l-shape_test.ifc",
-"A_graph-test": "building_A_003_m_graph-test.ifc",
-}
-
-
-
-#         'Openings': {'IfcOpeningElement': {}},
 
 internali2internalt = {
     1: 'Wall',
@@ -50,6 +31,16 @@ internali2internalt = {
     25: 'SpaceHeater',
     26: 'Proxy',
     999: 'other'
+}
+
+
+discipline_wise_classes = {
+    "ARC": ["Wall", "Floor", "Ceiling", "Door", "Window", "Column", "Stair"],
+    "PLB": ["Pipe", "Sink", "Toilet", "Sprinkler", "Tank"],
+    "VTL": ["Duct", "Air terminal"],
+    "EL": ["Light", "Alarm", "Sensor", "Outlet", "Switch"],
+    "FUR": ["Table", "Chair", "Bookshelf", "Appliance"],
+    "Rest": ["Space"]
 }
 
 # geometric features are calculated from a cluster of points and become attributes of the spg. The following dictionary translates the

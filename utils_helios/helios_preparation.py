@@ -5,13 +5,13 @@ from core_module.default_config.config import enrichment_feature_dict, transitio
 from core_module.pem.io import load_pem
 from pathlib import Path
 from visualisation.SurfaceModel import SurfaceModel
-from default_config.ifc_parsing_config import ifc_parsing_dict, get_relevant_ifc_classes
+from default_config.ifc_parsing_config import get_ifc_class_parsing_details
 
 def helios_prep_model(cfg):
     #### Generate second surface model to easily select waypoints in cloud compare - requirement: guids of ceiling elements)
     disciplines = cfg.disciplines.copy()
     disciplines.remove("Rest")
-    parsed_ifc_classes = get_relevant_ifc_classes(ifc_parsing_dict, disciplines)
+    parsed_ifc_classes = get_ifc_class_parsing_details(disciplines)
     parsed_ifc_classes_names = [x[0] for x in parsed_ifc_classes]
     model = SurfaceModel(Path(cfg.waypoint_selection_file), type_s="b")
     model.ifcconvert(cfg.ifc_file_path, parsed_ifc_classes_names, cfg.ceiling_elements_guid)

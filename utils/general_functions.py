@@ -1,10 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from core_module.default_config.config import internali2internalt
-from core_module.default_config.config import current_models
-from core_module.default_config.default_cfg import update_config_value
-import os
-import shutil
+
 
 
 def invert_dict(dict_in: dict) -> dict:
@@ -106,53 +103,3 @@ def from_open3d(point_cloud):
     labels = labels.astype(int).reshape((-1, 1))
 
     return points, labels, colors
-
-
-def prepare_project_dirs(cfg):
-    if not os.path.exists(cfg.experiment_dir):
-        os.makedirs(cfg.experiment_dir)
-
-    project_configs = []
-    for project in cfg.building_projects:
-        if cfg.design.ifc_file is not None and cfg.design.ifc_file is not None:
-            ifc_file_name_d = cfg.design.ifc_file
-            ifc_file_name_b = cfg.built.ifc_file
-        else:
-            print(f"Project {project} not found in current_models. Please provide the ifc file name.")
-            raise SystemExit
-        d_ifc = os.path.join(cfg.root_root_dir, "ifc_models", ifc_file_name_d)
-        b_ifc = os.path.join(cfg.root_root_dir, "ifc_models", ifc_file_name_b)
-        waypoint_file = os.path.join(cfg.root_root_dir, "waypoint_files", project+f"_{cfg.built.waypoints}")
-
-        cfg = update_config_value(cfg, ["project_name", project,
-                                  "root_dir", os.path.join(cfg.experiment_dir, project),
-                                  "design.ifc_file", ifc_file_name_d,
-                                  "built.ifc_file", ifc_file_name_b])
-
-
-
-
-        d_dir = os.path.join(cfg.root_dir, "d")
-        b_dir = os.path.join(cfg.root_dir, "b")
-        if not os.path.exists(d_dir):
-            os.makedirs(d_dir)
-            os.makedirs(b_dir)
-
-        # copy ifc into to d and b folders
-        shutil.copy(d_ifc, os.path.join(d_dir, ifc_file_name_d))
-        if not cfg.real:
-            shutil.copy(b_ifc, os.path.join(b_dir, ifc_file_name_b))
-            shutil.copy(waypoint_file, cfg.built.manual_waypoints_selection)
-
-
-
-        # make d and b folders and
-
-        yield cfg
-
-
-
-    """else:
-        print(f"Directory {cfg.experiment_dir} already exists.")
-        # end the program
-        raise SystemExit"""

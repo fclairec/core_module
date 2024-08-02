@@ -106,7 +106,7 @@ class DesignGraph(MyGraph):
         # from pem get all guit_ints where type_txt is in ["Wall", "Ceiling", "Floor"] and instance_type is "element"
         pem = load_pem(cfg.pem_file, mode="design")
 
-        space_guid_ints = pem.loc[(pem["type_txt"].isin(["Space"])) & (pem["instance_type"] == "element")].index.to_numpy()
+        space_guid_ints = pem.loc[(pem["type_txt"].isin(["Space"]))].index.to_numpy()
 
         self.graph.remove_nodes_from(space_guid_ints)
 
