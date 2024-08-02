@@ -48,6 +48,9 @@ def setup_paths(_C, ensure_paths=True):
     _C.design.f_shapes_pkl = osp.join(_C.design.root_dir, 'd_f_geometries.pkl')
 
     # assemble graph
+    _C.design.graph_file = osp.join(_C.design.root_dir, "d_my_graph.graphml")
+    _C.design.graph_viz_file = osp.join(_C.design.root_dir, "d_my_graph_viz.ply")
+
     _C.design.face_graph_file = osp.join(_C.design.root_dir, "d_my_graph_faces.graphml")
     _C.design.face_graph_viz_file = osp.join(_C.design.root_dir, "d_my_graph_faces_viz.ply")
     _C.design.node_color_legend_file = osp.join(_C.design.root_dir, "d_node_color_legend.png")
