@@ -115,13 +115,8 @@ def prepare_project_dirs(cfg):
     project_configs = []
     for project in cfg.building_projects:
         if cfg.design.ifc_file is not None and cfg.design.ifc_file is not None:
-            print("overwriting project name with ifc file name")
             ifc_file_name_d = cfg.design.ifc_file
             ifc_file_name_b = cfg.built.ifc_file
-        elif project in current_models.keys():
-            print("project ifc chosen, enter ifc_file config if wanted differently")
-            ifc_file_name_d = current_models[project]
-            ifc_file_name_b = current_models[project]
         else:
             print(f"Project {project} not found in current_models. Please provide the ifc file name.")
             raise SystemExit
@@ -145,8 +140,10 @@ def prepare_project_dirs(cfg):
 
         # copy ifc into to d and b folders
         shutil.copy(d_ifc, os.path.join(d_dir, ifc_file_name_d))
-        shutil.copy(b_ifc, os.path.join(b_dir, ifc_file_name_b))
-        shutil.copy(waypoint_file, cfg.built.manual_waypoints_selection)
+        if not cfg.real:
+            shutil.copy(b_ifc, os.path.join(b_dir, ifc_file_name_b))
+            shutil.copy(waypoint_file, cfg.built.manual_waypoints_selection)
+
 
 
         # make d and b folders and

@@ -2,143 +2,173 @@ import os.path as osp
 from yacs.config import CfgNode as CN
 from core_module.utils import common
 import yaml
+import shutil
 
 
 
-_C = CN()
+
+def setup_paths(_C, ensure_paths=True):
+
+    _C.root_dir = osp.join(_C.root_root_dir, _C.building_project)
+    _C.log_dir = osp.join(_C.root_dir, 'data_log')
+
+    _C.design.root_dir = osp.join(_C.root_dir, _C.design.setup_name)
+    _C.design.ifc_file_path = osp.join(_C.design.root_dir, _C.design.ifc_file)
+    _C.design.default_spanning_types = ["Wall", "Ceiling", 'Floor', 'Column']
+
+    _C.design.final_adjacency_file = osp.join(_C.design.root_dir, 'd_adjacencies_final.csv')
 
 
-_C.seed = 42
-_C.root_root_dir = '/home/appuser/input_data/experiments'
-_C.experiment_name = "CCP"
-_C.experiment_dir = osp.join(_C.root_root_dir, _C.experiment_name)
-_C.building_projects = ["A", "B", "C"]
-
-_C.project_name = "building_A"
-_C.root_dir = osp.join(_C.experiment_dir, _C.project_name)
-_C.log_dir = osp.join(_C.root_dir, 'data_log')
-
-_C.design = CN()
-_C.design.root_dir = osp.join(_C.root_dir, "d")
-_C.design.ifc_file = "design.ifc"
-_C.design.ifc_file_path = osp.join(_C.root_dir, "d", _C.design.ifc_file)
-_C.design.disciplines = ["ARC"]
-_C.design.default_spanning_types = ["Wall", "Ceiling", 'Floor', 'Column']
-
-_C.design.final_adjacency_file = osp.join(_C.design.root_dir, 'd_adjacencies_final.csv')
-
-_C.design.d_tol = CN()
-_C.design.d_tol.elements = 0.2
-_C.design.d_tol.face = 0.02 # 2cm
-_C.design.d_tol.merges = 0.02 # 2cm
-
-_C.built = CN()
-_C.built.root_dir = osp.join(_C.root_dir, "b")
-_C.built.ifc_file = "built.ifc"
-_C.built.ifc_file_path = osp.join(_C.root_dir, "b", _C.built.ifc_file)
-_C.built.disciplines = ["ARC"]
+    _C.built.root_dir = osp.join(_C.root_dir, _C.built.setup_name)
+    _C.built.ifc_file_path = osp.join(_C.built.root_dir, _C.built.ifc_file)
 
 
-# extract_data_from_ifc
-_C.design.viz_file = osp.join(_C.design.root_dir, "d_my_graph.ply")
-_C.design.adjacency_file = osp.join(_C.design.root_dir, 'd_adjacencies.csv')
-_C.design.containment_file = osp.join(_C.design.root_dir, 'd_containments.csv')
-_C.design.features_file = osp.join(_C.design.root_dir, 'd_features.csv')
-_C.design.pem_file = osp.join(_C.design.root_dir, 'd_project_element_map.csv')
-_C.design.surface_file_path = osp.join(_C.design.root_dir, 'd_surface.obj')
-_C.design.instances_pickle = osp.join(_C.design.root_dir, 'd_instances.pkl')
-_C.design.shapes_pkl = osp.join(_C.design.root_dir, 'd_geometries.pkl')
-_C.design.sampled_pcd_filename = osp.join(_C.design.root_dir, 'd_sampled_pcd.ply')
-_C.design.class_colors_fp = osp.join(_C.design.root_dir, f"_colors.json")
-_C.design.faces_filename = osp.join(_C.design.root_dir, 'd_faces.obj')
-_C.design.space_adj_file = osp.join(_C.design.root_dir, 'd_space_adj.csv')
-_C.design.space_graph = osp.join(_C.design.root_dir, 'd_space_graph.graphml')
-_C.design.space_graph_viz = osp.join(_C.design.root_dir, 'd_space_graph.png')
-
-_C.design.sampling_density = 400
-_C.design.voxel_size = 0.1
-
-# from elements to faces
-_C.design.face_adjacency_file = osp.join(_C.design.root_dir, "d_face_adjacency.csv")
-_C.design.f_instances_pickle = osp.join(_C.design.root_dir, 'd_f_instances.pkl')
-_C.design.f_shapes_pkl = osp.join(_C.design.root_dir, 'd_f_geometries.pkl')
-
-# assemble graph
-_C.design.face_graph_file = osp.join(_C.design.root_dir, "d_my_graph_faces.graphml")
-_C.design.face_graph_viz_file = osp.join(_C.design.root_dir, "d_my_graph_faces_viz.ply")
-_C.design.node_color_legend_file = osp.join(_C.design.root_dir, "d_node_color_legend.png")
-
-
-# prepare helios
-_C.built.waypoint_file = osp.join(_C.built.root_dir, "b_waypoints.csv")
-_C.built.pem_file = osp.join(_C.built.root_dir, "b_project_element_map.csv")
-_C.built.waypoint_selection_file = osp.join(_C.built.root_dir, 'b_waypoint_selection.obj')
-_C.built.instances_pickle = osp.join(_C.built.root_dir, 'b_instances.pkl')
-_C.built.shapes_pkl = osp.join(_C.built.root_dir, 'b_geometries.pkl')
-_C.built.helios_simulation_file = osp.join(_C.built.root_dir,'b_simulation_file.obj')
-_C.built.faces_filename = osp.join(_C.built.root_dir, 'b_faces.obj')
-_C.built.adjacency_file = osp.join(_C.built.root_dir, 'b_adjacencies.csv')
-_C.built.containment_file = osp.join(_C.built.root_dir, 'b_containments.csv')
-_C.built.space_adj_file = osp.join(_C.built.root_dir, 'b_space_adj.csv')
-_C.built.space_graph = osp.join(_C.built.root_dir, 'b_space_graph.graphml')
-_C.built.space_graph_viz = osp.join(_C.built.root_dir, 'b_space_graph.png')
-_C.built.face_adjacency_file = osp.join(_C.built.root_dir, "b_face_adjacency.csv")
-_C.built.default_spanning_types = ["Wall", "Ceiling", 'Floor', 'Column']
-
-_C.built.ceiling_elements_guid = []
-
-_C.built.d_tol = CN()
-_C.built.d_tol.elements = 0.2
-_C.built.d_tol.face = 0.02 # 2cm
-_C.built.d_tol.merges = 0.02 # 2cm
-_C.built.final_adjacency_file = osp.join(_C.design.root_dir, 'd_adjacencies_final.csv')
+    # extract_data_from_ifc
+    _C.design.viz_file = osp.join(_C.design.root_dir, "d_my_graph.ply")
+    _C.design.adjacency_file = osp.join(_C.design.root_dir, 'd_adjacencies.csv')
+    _C.design.containment_file = osp.join(_C.design.root_dir, 'd_containments.csv')
+    _C.design.features_file = osp.join(_C.design.root_dir, 'd_features.csv')
+    _C.design.pem_file = osp.join(_C.design.root_dir, 'd_project_element_map.csv')
+    _C.design.surface_file_path = osp.join(_C.design.root_dir, 'd_surface.obj')
+    _C.design.instances_pickle = osp.join(_C.design.root_dir, 'd_instances.pkl')
+    _C.design.shapes_pkl = osp.join(_C.design.root_dir, 'd_geometries.pkl')
+    _C.design.sampled_pcd_filename_unprocessed = osp.join(_C.design.root_dir, 'd_sampled_pcd.las')
+    _C.design.sampled_pcd_filename_processed = osp.join(_C.design.root_dir, 'd_sampled_pcd_SM.las')
+    _C.design.class_colors_fp = osp.join(_C.design.root_dir, f"_colors.json")
+    _C.design.faces_filename = osp.join(_C.design.root_dir, 'd_faces.obj')
+    _C.design.space_adj_file = osp.join(_C.design.root_dir, 'd_space_adj.csv')
+    _C.design.space_graph = osp.join(_C.design.root_dir, 'd_space_graph.graphml')
+    _C.design.space_graph_viz = osp.join(_C.design.root_dir, 'd_space_graph.png')
 
 
 
-# manual way point conversion
-_C.built.waypoints = "b_waypoints.txt"
-_C.built.manual_waypoints_selection = osp.join(_C.built.root_dir, _C.built.waypoints)
+    # from elements to faces
+    _C.design.face_adjacency_file = osp.join(_C.design.root_dir, "d_face_adjacency.csv")
+    _C.design.f_instances_pickle = osp.join(_C.design.root_dir, 'd_f_instances.pkl')
+    _C.design.f_shapes_pkl = osp.join(_C.design.root_dir, 'd_f_geometries.pkl')
+
+    # assemble graph
+    _C.design.graph_file = osp.join(_C.design.root_dir, "d_my_graph.graphml")
+    _C.design.graph_viz_file = osp.join(_C.design.root_dir, "d_my_graph_viz.ply")
+
+    _C.design.face_graph_file = osp.join(_C.design.root_dir, "d_my_graph_faces.graphml")
+    _C.design.face_graph_viz_file = osp.join(_C.design.root_dir, "d_my_graph_faces_viz.ply")
+    _C.design.node_color_legend_file = osp.join(_C.design.root_dir, "d_node_color_legend.png")
+
+
+    # prepare helios
+    _C.built.waypoint_file = osp.join(_C.built.root_dir, "b_waypoints.csv")
+    _C.built.pem_file = osp.join(_C.built.root_dir, "b_project_element_map.csv")
+    _C.built.waypoint_selection_file = osp.join(_C.built.root_dir, 'b_waypoint_selection.obj')
+    _C.built.instances_pickle = osp.join(_C.built.root_dir, 'b_instances.pkl')
+    _C.built.shapes_pkl = osp.join(_C.built.root_dir, 'b_geometries.pkl')
+    _C.built.helios_simulation_file = osp.join(_C.built.root_dir,'b_simulation_file.obj')
+    _C.built.faces_filename = osp.join(_C.built.root_dir, 'b_faces.obj')
+    _C.built.adjacency_file = osp.join(_C.built.root_dir, 'b_adjacencies.csv')
+    _C.built.containment_file = osp.join(_C.built.root_dir, 'b_containments.csv')
+    _C.built.space_adj_file = osp.join(_C.built.root_dir, 'b_space_adj.csv')
+    _C.built.space_graph = osp.join(_C.built.root_dir, 'b_space_graph.graphml')
+    _C.built.space_graph_viz = osp.join(_C.built.root_dir, 'b_space_graph.png')
+    _C.built.face_adjacency_file = osp.join(_C.built.root_dir, "b_face_adjacency.csv")
+    _C.built.default_spanning_types = ["Wall", "Ceiling", 'Floor', 'Column']
+
+    _C.built.final_adjacency_file = osp.join(_C.built.root_dir, 'b_adjacencies_final.csv')
 
 
 
-# helios simulation
-_C.built.simulation = CN()
-_C.built.simulation.test_pcd = True
-_C.built.simulation.directory = osp.join(_C.built.root_dir, "helios")
-_C.built.simulation.results_directory = osp.join(_C.built.simulation.directory, "results")
-_C.built.simulation.total_pcd_filename = osp.join(_C.built.root_dir, "b_simulated_pcd.xyz")
-_C.built.simulation.total_trajectory_filename = osp.join(_C.built.root_dir, "full_trajectory.txt")
+    # manual way point conversion
+    _C.built.manual_waypoints_selection = osp.join(_C.built.root_dir, _C.built.waypoints)
 
 
-# pcd_graph
-_C.built.spg_file = osp.join(_C.built.root_dir, "spg.h5")
-_C.built.pc_graph_file = osp.join(_C.built.root_dir, "my_graph.graphml")
-_C.built.pc_graph_viz_file = osp.join(_C.built.root_dir, "b_my_graph.ply")
-_C.built.node_color_legend_file = osp.join(_C.built.root_dir, "b_node_color_legend.png")
-_C.built.b_downsampled_pcd = osp.join(_C.built.root_dir, "b_downsampled_pcd.ply")
-_C.built.features_file = osp.join(_C.built.root_dir,"b_features.csv")
-_C.built.voxel_size = 0.01
-_C.built.d_max = 0.02 # can not be lower than voxel size
 
-# make dataset splits
-_C.built.splits = CN()
-_C.built.splits.dir_template = osp.join(_C.built.root_dir, "split_{}_{}_{}_{}") #subset key, room_nb, rotation(x30/y30), translation(x10,x-10)
-_C.built.splits.dirs = []
-_C.built.splits.split_pcd = "pcd.las"
-_C.built.splits.split_pem = "project_element_map.csv"
-_C.built.splits.split_feat = "features.csv"
-_C.built.splits.split_spg = "spg.h5"
-_C.built.splits.split_viz = "my_graph.ply"
-_C.built.splits.split_graph = "my_graph.graphml"
-_C.built.splits.split_cfg_log = "cfg.log"
+    # helios simulation
+    _C.built.simulation.directory = osp.join(_C.built.root_dir, "helios")
+    _C.built.simulation.results_directory = osp.join(_C.built.simulation.directory, "results")
+    _C.built.simulation.total_pcd_filename = osp.join(_C.built.root_dir, "b_simulated_pcd.xyz")
+    _C.built.simulation.total_trajectory_filename = osp.join(_C.built.root_dir, "full_trajectory.txt")
 
-# default experiemental setup
-_C.built.experiment_setup = CN()
-_C.built.experiment_setup.split_type = ["wp"]
-_C.built.experiment_setup.room_nb = [2]
-_C.built.experiment_setup.rotations = [[0, 0, 0]]
-_C.built.experiment_setup.translations = [[0, 0, 0]]
 
+    # pcd_graph
+    _C.built.spg_file = osp.join(_C.built.root_dir, "spg.h5")
+    _C.built.pc_graph_file = osp.join(_C.built.root_dir, "my_graph.graphml")
+    _C.built.pc_graph_viz_file = osp.join(_C.built.root_dir, "b_my_graph.ply")
+    _C.built.node_color_legend_file = osp.join(_C.built.root_dir, "b_node_color_legend.png")
+    _C.built.b_downsampled_pcd = osp.join(_C.built.root_dir, "b_downsampled_pcd.ply")
+    _C.built.features_file = osp.join(_C.built.root_dir,"b_features.csv")
+
+
+    # make dataset splits
+    _C.built.splits = CN()
+    _C.built.splits.dir_template = osp.join(_C.built.root_dir, "split_{}_{}_{}_{}") #subset key, room_nb, rotation(x30/y30), translation(x10,x-10)
+    _C.built.splits.dirs = []
+    _C.built.splits.split_pcd = "pcd.las"
+    _C.built.splits.split_pem = "project_element_map.csv"
+    _C.built.splits.split_feat = "features.csv"
+    _C.built.splits.split_spg = "spg.h5"
+    _C.built.splits.split_viz = "my_graph.ply"
+    _C.built.splits.split_graph = "my_graph.graphml"
+    _C.built.splits.split_cfg_log = "cfg.log"
+
+    if ensure_paths:
+        s = create_paths(_C)
+        if s == 0:
+            return None
+    return _C
+
+def create_paths(cfg):
+    """ ensures directories are created. if already there, break"""
+    """
+    if not os.path.exists(cfg.experiment_dir):
+        os.makedirs(cfg.experiment_dir)
+    """
+    if not osp.exists(cfg.root_dir):
+        common.ensure_dir(cfg.root_dir)
+        common.ensure_dir(cfg.log_dir)
+
+    #mode = "d" if cfg.design.setup_name != "setup_default" elif cfg.built.setup_name != "setup_default" else None
+    mode = "design" if cfg.design.setup_name != "setup_default" else "built" if cfg.built.setup_name != "setup_default" else None
+    if mode is None:
+        print ("No setup name provided - skipping ")
+        return 0
+    cfg_s = getattr(cfg, mode)
+    if osp.exists(cfg_s.root_dir):
+        print(f"Directory {cfg_s.root_dir} already exists. Please rename")
+        return 0
+    else:
+        common.ensure_dir(cfg_s.root_dir)
+        # copy ifc
+        d_ifc = osp.join(cfg.ifc_pool, cfg_s.ifc_file)
+        shutil.copy(d_ifc, cfg_s.ifc_file_path)
+
+        if mode == "built":
+            # copy waypoints
+            waypoint_file = osp.join(cfg.waypoint_pool, cfg.building_project+f"_{cfg.built.waypoints}")
+            shutil.copy(waypoint_file, cfg.built.manual_waypoints_selection)
+
+
+
+
+
+
+
+
+
+
+
+
+def assemble_paths(cfg, cfg_args, ensure_dir=True):
+    cfg.defrost()
+    cfg.merge_from_file(cfg_args)
+    cfg = update_dependent_paths(cfg)
+    #update_paths(cfg)
+
+    if ensure_dir:
+
+        #general_classes.ensure_dir(cfg.event_dir)
+        common.ensure_dir(cfg.log_dir)
+    cfg.freeze()
+
+    return cfg
 
 def update_config(cfg, cfg_args, ensure_dir=True):
     cfg.defrost()
@@ -247,10 +277,7 @@ def update_dependent_paths(cfg):
 def update_config_value(cfg, cfg_args, ensure_dir=True):
     cfg.defrost()
     cfg.merge_from_list(cfg_args)
-    cfg = update_dependent_paths(cfg)
     cfg.freeze()
-    common.ensure_dir(cfg.root_dir)
-    common.ensure_dir(cfg.log_dir)
     return cfg
 
 
