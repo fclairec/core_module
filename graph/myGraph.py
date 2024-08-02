@@ -64,6 +64,31 @@ class MyGraph():
         print(f"adding node")
         return new_node_id
 
+    def add_custom_nodes(self, node_ids, attributes):
+        """function should add a node to the graph with the given adjacencies and features. It also adds the node to
+        the project element map"""
+        # get a new node id that is not already in the graph
+        graph_ids = []
+        for node_id, attrs in zip(node_ids, attributes):
+            if len(self.graph.nodes()) != 0:
+                new_node_id = max(self.graph.nodes()) + 1
+            else:
+                new_node_id = 0
+            graph_ids.append(new_node_id)
+            self.graph.add_node(new_node_id, **attrs)
+        # self.project_element_map = self.project_element_map.append(attributes, ignore_index=True)
+        print(f"adding nodes")
+        return graph_ids
+
+    def add_custom_edges(self, edges):
+        for edge in edges:
+            self.graph.add_edge(*edge)
+
+
+
+
+
+
     def find_shared_adjacencies(self, node_id, node_id2):
         """ function should find the node by the id given, then check their adjacencies and return the shared ones"""
         adj_target = list(dict(self.graph.adj[node_id]).keys())
