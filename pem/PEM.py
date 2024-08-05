@@ -5,6 +5,7 @@ from core_module.utils_general.general_functions import invert_dict_list
 class PEM:
     def __init__(self, mode="default"):
         self.mode = mode
+        self.inst_types_all = ["element", "face", "aggregate", "space", "rewritten", "spanning", "segment"]
         self.guid_int = []
         self.type_int = []
         self.type_txt = []
@@ -72,13 +73,23 @@ class PEM:
 
     def get_instance_entry(self, guid_int):
         position = self.guid_int.index(guid_int)
-        instance = {key: value[position] for key, value in self.__dict__.items() if key != "mode"}
+        instance = {key: value[position] for key, value in self.__dict__.items() if key not in ["mode", "inst_types_all"]}
         return instance
 
     def get_instance_guids_by_type(self, instance_type):
         instance_guid2type = {self.guid_int[i]: self.instance_type[i] for i in range(len(self.guid_int))}
         type2instance_guid = invert_dict_list(instance_guid2type)
+        for inst_t in self.inst_types_all:
+            if inst_t not in type2instance_guid.keys():
+                type2instance_guid[inst_t] = []
         return type2instance_guid[instance_type]
+
+    def get_instance_guids_by_types(self, instance_types):
+        all_guids = []
+        for intst_type in instance_types:
+            lst_guids = self.get_instance_guids_by_type(intst_type)
+            all_guids += lst_guids
+        return all_guids
 
     def get_instance_guids_excluding_type(self, instance_types):
         instance_guid2type = {self.guid_int[i]: self.instance_type[i] for i in range(len(self.guid_int)) if self.instance_type[i] not in instance_types}
@@ -104,7 +115,7 @@ class PEM:
 
 
     def save_pem(self, pem_file):
-        pem_dict = {key: value for key, value in self.__dict__.items() if key != "mode"}
+        pem_dict = {key: value for key, value in self.__dict__.items() if key not in ["mode", "inst_types_all"]}
         pem = pd.DataFrame(pem_dict)
         if self.mode == "d":
             pem.to_csv(pem_file, index=False)

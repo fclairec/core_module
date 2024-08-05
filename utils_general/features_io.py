@@ -10,7 +10,7 @@ def geom_features_to_file(cfg, instances: InstanceCollection, exists=True):
     print("Calculating geometric features")
     features_file = cfg.features_file
     # flatten dict to list
-    instances = instances.get_flat_list()
+    instances = instances.get_flat_list(all=True)
     features_df = pd.DataFrame(index=[inst.guid_int for inst in instances])
 
     for i_ in instances:

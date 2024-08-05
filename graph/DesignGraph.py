@@ -47,7 +47,17 @@ class DesignGraph(MyGraph):
         _left_nodes = adjacency["Start_node"].to_numpy().flatten()
         _right_node = adjacency["End_node"].to_numpy().flatten()
         edge_pairs = list(map(tuple, np.stack((_left_nodes, _right_node), axis=1)))
-        self.graph.add_edges_from(edge_pairs)
+
+        # add element to room edges
+        room_edges = []
+        for guid_int in selected_guids:
+            pem_entry = pem.get_instance_entry(guid_int)
+            room_id = pem_entry["room_id"]
+            room_edges.append((guid_int, int(room_id)))
+
+
+        
+        self.graph.add_edges_from(edge_pairs + room_edges)
 
 
 
@@ -55,8 +65,21 @@ class DesignGraph(MyGraph):
         node_attribute_dict = {}
 
         for guid_int in guid_ints:
+
+            # add ifc guid to node attributes
+            pem_entry = pem.get_instance_entry(guid_int)
+
+
             if guid_int in features.index:
-                node_attribute_dict[guid_int] = features.loc[guid_int].to_dict()
+
+                if pem_entry["type_txt"] == "Space":
+                    feats = features.loc[guid_int].to_dict()
+                    feats["cp_z"] += 4
+                    node_attribute_dict[guid_int] = feats
+                else:
+                    node_attribute_dict[guid_int] = features.loc[guid_int].to_dict()
+
+                a=0
             else:
                 print(f"guid_int {guid_int} element without geometric features")
                 # take template from features
@@ -66,14 +89,14 @@ class DesignGraph(MyGraph):
                     template[key] = None
                 node_attribute_dict[guid_int] = template
 
-
-            # add ifc guid to node attributes
-            pem_entry = pem.get_instance_entry(guid_int)
             node_attribute_dict[guid_int]["ifc_guid"] = pem_entry["ifc_guid"]
             # add the node type
             node_attribute_dict[guid_int]["node_type"] = pem_entry["instance_type"]
             # add property "has_face"
             node_attribute_dict[guid_int]["has_face"] = 0 if np.isnan(pem_entry["associated_face"]) else 1
+
+
+
 
 
         return node_attribute_dict

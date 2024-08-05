@@ -92,20 +92,23 @@ class IfcPEM(PEM):
     def get_spanning_elements(self, cfg):
         """ spanning elements are by default all walls and slabs plus all other elements that intersect with more than
         one space"""
-        default_sp_el = [id for id in self.guid_int if self.get_instance_entry(id)["type_txt"] in cfg.default_spanning_types]
+        if np.isnan(self.spanning_element[0]):
+            default_sp_el = [id for id in self.guid_int if self.get_instance_entry(id)["type_txt"] in cfg.default_spanning_types]
 
-        space_id_adjacency = [ast.literal_eval(x) for x in self.space_id_adjacency]
-        space_id_containment = [ast.literal_eval(x) for x in self.space_id_containment]
-        merged_space_id = [list(set(x + y)) for x, y in zip(space_id_adjacency, space_id_containment)]
-        spanning_elements_maks = np.array([(len(x) > 1) for x in merged_space_id])
-        sp_el_guids = np.array(self.guid_int)[spanning_elements_maks].tolist() + default_sp_el
-        for guid_int in sp_el_guids:
-            if self.get_instance_entry(guid_int)["type_txt"] in transition_element_types:
-                spanning_elements_maks[self.guid_int.index(guid_int)] = False
-            else:
-                spanning_elements_maks[self.guid_int.index(guid_int)] = True
-        sp_el_guids = np.array(self.guid_int)[spanning_elements_maks].tolist()
-        self.spanning_element = spanning_elements_maks
+            space_id_adjacency = [ast.literal_eval(x) for x in self.space_id_adjacency]
+            space_id_containment = [ast.literal_eval(x) for x in self.space_id_containment]
+            merged_space_id = [list(set(x + y)) for x, y in zip(space_id_adjacency, space_id_containment)]
+            spanning_elements_maks = np.array([(len(x) > 1) for x in merged_space_id])
+            sp_el_guids = np.array(self.guid_int)[spanning_elements_maks].tolist() + default_sp_el
+            for guid_int in sp_el_guids:
+                if self.get_instance_entry(guid_int)["type_txt"] in transition_element_types:
+                    spanning_elements_maks[self.guid_int.index(guid_int)] = False
+                else:
+                    spanning_elements_maks[self.guid_int.index(guid_int)] = True
+            sp_el_guids = np.array(self.guid_int)[spanning_elements_maks].tolist()
+            self.spanning_element = spanning_elements_maks
+        else:
+            sp_el_guids = [self.guid_int[i] for i in range(len(self.guid_int)) if self.spanning_element[i]]
 
         return sp_el_guids
 
