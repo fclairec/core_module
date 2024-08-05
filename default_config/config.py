@@ -33,6 +33,17 @@ internali2internalt = {
     999: 'other'
 }
 
+internali2internalt_discipline = {
+    1: 'ARC',
+    2: 'PLB',
+    3: 'VTL',
+    4: 'EL',
+    5: 'FUR',
+    6: 'Rest',
+    999: 'other'
+}
+
+
 
 discipline_wise_classes = {
     "ARC": ["Wall", "Floor", "Ceiling", "Door", "Window", "Column", "Stair"],
@@ -55,7 +66,9 @@ sp_feature_translation_dict = {
 
 enrichment_feature_dict = {
     "label": "type_int",
-    "color": "color"
+    "color": "color",
+    "discipline": "discipline_int",
+    "room": "room_id",
 }
 
 int2color = {

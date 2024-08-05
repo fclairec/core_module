@@ -3,7 +3,7 @@ from itertools import combinations
 import networkx as nx
 import itertools
 from core_module.default_config.config import transition_element_types, internali2internalt
-from core_module.utils.general_functions import invert_dict_simple
+from core_module.utils_general.general_functions import invert_dict_simple
 
 
 def get_possible_room_combinations(cfg, nb=2, limit_room_repetition=True):

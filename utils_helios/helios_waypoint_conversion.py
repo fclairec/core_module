@@ -3,6 +3,7 @@ import re
 
 
 def helios_waypoint_conversion(cfg):
+    print("Converting manual waypoints to CSV format")
     with open(cfg.manual_waypoints_selection) as file:
         waypoints_content = file.readlines()
 

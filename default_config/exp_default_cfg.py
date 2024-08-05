@@ -1,6 +1,6 @@
 import os.path as osp
 from yacs.config import CfgNode as CN
-from core_module.utils import common
+from core_module.utils_general import common
 import yaml
 import copy
 
@@ -26,6 +26,7 @@ _C.design.d_tol = CN()
 _C.design.d_tol.elements = 0.2
 _C.design.d_tol.face = 0.02 # 2cm
 _C.design.d_tol.merges = 0.02 # 2cm
+_C.design.n_tol = 0.9
 
 _C.design.sampling_density = 400
 _C.design.voxel_size = 0.1
@@ -45,6 +46,7 @@ _C.built.d_tol = CN()
 _C.built.d_tol.elements = 0.2
 _C.built.d_tol.face = 0.02
 _C.built.d_tol.merges = 0.02
+_C.built.n_tol = 0.9
 
 _C.built.voxel_size = 0.01
 _C.built.d_max = 0.02

@@ -1,18 +1,16 @@
 from core_module.default_config.config import feature_tasks
 from core_module.utils_geometric.geometric_features import get_geometric_features
 import pandas as pd
-from typing import List, Dict, Union
-from utils.BuildingFace import BuildingFace
-from utils.BuildingElement import BuildingElement
 from core_module.default_config.config import sp_feature_translation_dict
+from instance_classes.InstanceCollection import InstanceCollection
 
-
-def geom_features_to_file(cfg, instances: Dict[str, List[Union[BuildingFace, BuildingElement]]], exists=True):
+def geom_features_to_file(cfg, instances: InstanceCollection, exists=True):
     # calculation of the geometric features (not to store the whole geometry (difficult to pickle, not stable))
     # d
-    features_file = cfg.design.features_file
+    print("Calculating geometric features")
+    features_file = cfg.features_file
     # flatten dict to list
-    instances = [inst for key in instances for inst in instances[key] if key!="rewritten"]
+    instances = instances.get_flat_list()
     features_df = pd.DataFrame(index=[inst.guid_int for inst in instances])
 
     for i_ in instances:

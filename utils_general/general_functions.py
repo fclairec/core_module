@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 from core_module.default_config.config import internali2internalt
 
 
-
 def invert_dict(dict_in: dict) -> dict:
     """ the class map inverse is needed to look up effectively"""
     dict_inverse = {}
@@ -19,6 +18,36 @@ def invert_dict_simple(dict_in: dict) -> dict:
     for key, value in dict_in.items():
         dict_inverse[value] = key
     return dict_inverse
+
+
+def invert_dict_list(dict_in: dict) -> dict:
+    """ the class map inverse is needed to look up effectively"""
+    dict_out = {}
+    for key, value in dict_in.items():
+        if value not in dict_out:
+            dict_out[value] = [key]
+        else:
+            dict_out[value].append(key)
+
+    return dict_out
+
+def merge_dicts(dict1, dict2):
+    # Create a new dictionary to hold the merged results
+    merged_dict = {}
+
+    # Iterate over the keys in both dictionaries
+    for key in set(dict1) | set(dict2):
+        # If the key is in both dictionaries, merge the lists
+        if key in dict1 and key in dict2:
+            merged_dict[key] = dict1[key] + dict2[key]
+        # If the key is only in dict1, use the value from dict1
+        elif key in dict1:
+            merged_dict[key] = dict1[key]
+        # If the key is only in dict2, use the value from dict2
+        else:
+            merged_dict[key] = dict2[key]
+
+    return merged_dict
 
 
 def map_dict_keys(dict_in: dict, dict_map: dict) -> dict:
@@ -38,6 +67,7 @@ def select_ifc_classes_per_discipline(disciplines: list, parsed_ifc_classes_dict
     for discipline in disciplines:
         ifc_classes = ifc_classes + parsed_ifc_classes_dict[discipline]
     return ifc_classes
+
 
 def get_int_classes_per_discipline(ifc_parsing_dict: dict) -> dict:
     """ select the ifc classes that are relevant for the given disciplines"""
