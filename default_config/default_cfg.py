@@ -1,6 +1,6 @@
 import os.path as osp
 from yacs.config import CfgNode as CN
-from core_module.utils import common
+from core_module.utils_general import common
 import yaml
 import shutil
 
@@ -32,9 +32,10 @@ def setup_paths(_C, ensure_paths=True):
     _C.design.surface_file_path = osp.join(_C.design.root_dir, 'd_surface.obj')
     _C.design.instances_pickle = osp.join(_C.design.root_dir, 'd_instances.pkl')
     _C.design.shapes_pkl = osp.join(_C.design.root_dir, 'd_geometries.pkl')
-    _C.design.sampled_pcd_filename = osp.join(_C.design.root_dir, 'd_sampled_pcd.ply')
+    _C.design.sampled_pcd_filename_unprocessed = osp.join(_C.design.root_dir, 'd_sampled_pcd.las')
+    _C.design.sampled_pcd_filename_processed = osp.join(_C.design.root_dir, 'd_sampled_pcd_SM.las')
     _C.design.class_colors_fp = osp.join(_C.design.root_dir, f"_colors.json")
-    _C.design.faces_filename = osp.join(_C.design.root_dir, 'd_faces.obj')
+    _C.design.instances_filename = osp.join(_C.design.root_dir, 'd_colored_instances.obj')
     _C.design.space_adj_file = osp.join(_C.design.root_dir, 'd_space_adj.csv')
     _C.design.space_graph = osp.join(_C.design.root_dir, 'd_space_graph.graphml')
     _C.design.space_graph_viz = osp.join(_C.design.root_dir, 'd_space_graph.png')
@@ -47,6 +48,9 @@ def setup_paths(_C, ensure_paths=True):
     _C.design.f_shapes_pkl = osp.join(_C.design.root_dir, 'd_f_geometries.pkl')
 
     # assemble graph
+    _C.design.graph_file = osp.join(_C.design.root_dir, "d_my_graph.graphml")
+    _C.design.graph_viz_file = osp.join(_C.design.root_dir, "d_my_graph_viz.ply")
+
     _C.design.face_graph_file = osp.join(_C.design.root_dir, "d_my_graph_faces.graphml")
     _C.design.face_graph_viz_file = osp.join(_C.design.root_dir, "d_my_graph_faces_viz.ply")
     _C.design.node_color_legend_file = osp.join(_C.design.root_dir, "d_node_color_legend.png")
@@ -59,7 +63,7 @@ def setup_paths(_C, ensure_paths=True):
     _C.built.instances_pickle = osp.join(_C.built.root_dir, 'b_instances.pkl')
     _C.built.shapes_pkl = osp.join(_C.built.root_dir, 'b_geometries.pkl')
     _C.built.helios_simulation_file = osp.join(_C.built.root_dir,'b_simulation_file.obj')
-    _C.built.faces_filename = osp.join(_C.built.root_dir, 'b_faces.obj')
+    _C.built.instances_filename = osp.join(_C.built.root_dir, 'b_faces.obj')
     _C.built.adjacency_file = osp.join(_C.built.root_dir, 'b_adjacencies.csv')
     _C.built.containment_file = osp.join(_C.built.root_dir, 'b_containments.csv')
     _C.built.space_adj_file = osp.join(_C.built.root_dir, 'b_space_adj.csv')
@@ -208,7 +212,7 @@ def update_dependent_paths(cfg):
     cfg.design.shapes_pkl = osp.join(_C.design.root_dir, 'd_geometries.pkl')
     cfg.design.sampled_pcd_filename = osp.join(_C.design.root_dir, 'd_sampled_pcd.ply')
     cfg.design.class_colors_fp = osp.join(_C.design.root_dir, f"_colors.json")
-    cfg.design.faces_filename = osp.join(_C.design.root_dir, 'd_faces.obj')
+    cfg.design.instances_filename = osp.join(_C.design.root_dir, 'd_faces.obj')
 
     # from elements to faces
     cfg.design.face_adjacency_file = osp.join(_C.design.root_dir, "d_face_adjacency.csv")
@@ -230,7 +234,7 @@ def update_dependent_paths(cfg):
     cfg.built.instances_pickle = osp.join(_C.built.root_dir, 'b_instances.pkl')
     cfg.built.shapes_pkl = osp.join(_C.built.root_dir, 'b_geometries.pkl')
     cfg.built.helios_simulation_file = osp.join(_C.built.root_dir,'b_simulation_file.obj')
-    cfg.built.faces_filename = osp.join(_C.built.root_dir, 'b_faces.obj')
+    cfg.built.instances_filename = osp.join(_C.built.root_dir, 'b_faces.obj')
     cfg.built.adjacency_file = osp.join(_C.built.root_dir, 'b_adjacencies.csv')
     cfg.built.containment_file = osp.join(_C.built.root_dir, 'b_containments.csv')
     cfg.built.space_adj_file = osp.join(_C.built.root_dir, 'b_space_adj.csv')
@@ -273,10 +277,7 @@ def update_dependent_paths(cfg):
 def update_config_value(cfg, cfg_args, ensure_dir=True):
     cfg.defrost()
     cfg.merge_from_list(cfg_args)
-    cfg = update_dependent_paths(cfg)
     cfg.freeze()
-    common.ensure_dir(cfg.root_dir)
-    common.ensure_dir(cfg.log_dir)
     return cfg
 
 

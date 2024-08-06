@@ -1,6 +1,6 @@
 import os.path as osp
 from yacs.config import CfgNode as CN
-from core_module.utils import common
+from core_module.utils_general import common
 import yaml
 import copy
 
@@ -11,8 +11,9 @@ _C = CN()
 _C.root_root_dir = '/home/appuser/input_data/experiments'
 _C.ifc_pool = '/home/appuser/input_data/experiments/ifc_models'
 _C.waypoint_pool = '/home/appuser/input_data/experiments/waypoint_files'
+_C.real_point_cloud_pool = '/home/appuser/input_data/experiments/real_point_clouds'
 _C.building_project = "A"
-_C.real = False
+
 
 
 _C.design = CN()
@@ -25,6 +26,7 @@ _C.design.d_tol = CN()
 _C.design.d_tol.elements = 0.2
 _C.design.d_tol.face = 0.02 # 2cm
 _C.design.d_tol.merges = 0.02 # 2cm
+_C.design.n_tol = 0.9
 
 _C.design.sampling_density = 400
 _C.design.voxel_size = 0.1
@@ -35,6 +37,8 @@ _C.design.voxel_size = 0.1
 _C.built = CN()
 _C.built.setup_name = "setup_default"
 _C.built.ifc_file = "setup_default"
+_C.built.real = False
+_C.built.point_cloud = "setup_default"
 _C.built.disciplines = []
 _C.built.default_spanning_types = ["Wall", "Ceiling", 'Floor', 'Column']
 
@@ -42,6 +46,7 @@ _C.built.d_tol = CN()
 _C.built.d_tol.elements = 0.2
 _C.built.d_tol.face = 0.02
 _C.built.d_tol.merges = 0.02
+_C.built.n_tol = 0.9
 
 _C.built.voxel_size = 0.01
 _C.built.d_max = 0.02
@@ -50,13 +55,17 @@ _C.built.simulation = CN()
 _C.built.simulation.test = False
 _C.built.simulation.accuracy = 0.005
 
-_C.built.room_nb = [1]
-_C.built.rotations = [[0, 0, 0]]
-_C.built.translations = [[0, 0, 0]]
-_C.built.split_type = "wp"
+_C.built.subsets = CN()
+_C.built.subsets.split_type = ["wp"]
+_C.built.subsets.room_nb = [1]
+_C.built.subsets.rotations = [[0, 0, 0]]
+_C.built.subsets.translations = [[0, 0, 0]]
+
 _C.built.ceiling_elements_guid = ["3kOisf8iHDQ9b60gokQk6c", "2NoCROD1P8KxbahrIQpFr7", "3L2L5EHTz56ef40SrZlEr6",
                         "3L2L5EHTz56ef40SrZlEr5", "3BmeJtEDj3AQO77Os2w6ZR", "0P7YxrKvv9pAandyAj8CEC",
                         "08Kju84ofEuAMc6WrE1A36"]
+
+
 
 
 def dict_to_flat_list(d, mode):

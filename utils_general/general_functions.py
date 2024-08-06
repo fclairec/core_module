@@ -1,10 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from core_module.default_config.config import internali2internalt
-from core_module.default_config.config import current_models
-from core_module.default_config.default_cfg import update_config_value
-import os
-import shutil
 
 
 def invert_dict(dict_in: dict) -> dict:
@@ -24,6 +20,36 @@ def invert_dict_simple(dict_in: dict) -> dict:
     return dict_inverse
 
 
+def invert_dict_list(dict_in: dict) -> dict:
+    """ the class map inverse is needed to look up effectively"""
+    dict_out = {}
+    for key, value in dict_in.items():
+        if value not in dict_out:
+            dict_out[value] = [key]
+        else:
+            dict_out[value].append(key)
+
+    return dict_out
+
+def merge_dicts(dict1, dict2):
+    # Create a new dictionary to hold the merged results
+    merged_dict = {}
+
+    # Iterate over the keys in both dictionaries
+    for key in set(dict1) | set(dict2):
+        # If the key is in both dictionaries, merge the lists
+        if key in dict1 and key in dict2:
+            merged_dict[key] = dict1[key] + dict2[key]
+        # If the key is only in dict1, use the value from dict1
+        elif key in dict1:
+            merged_dict[key] = dict1[key]
+        # If the key is only in dict2, use the value from dict2
+        else:
+            merged_dict[key] = dict2[key]
+
+    return merged_dict
+
+
 def map_dict_keys(dict_in: dict, dict_map: dict) -> dict:
     """ map the keys of dict one by another dict"""
     dict_out = {}
@@ -41,6 +67,7 @@ def select_ifc_classes_per_discipline(disciplines: list, parsed_ifc_classes_dict
     for discipline in disciplines:
         ifc_classes = ifc_classes + parsed_ifc_classes_dict[discipline]
     return ifc_classes
+
 
 def get_int_classes_per_discipline(ifc_parsing_dict: dict) -> dict:
     """ select the ifc classes that are relevant for the given disciplines"""
@@ -106,53 +133,3 @@ def from_open3d(point_cloud):
     labels = labels.astype(int).reshape((-1, 1))
 
     return points, labels, colors
-
-
-def prepare_project_dirs(cfg):
-    if not os.path.exists(cfg.experiment_dir):
-        os.makedirs(cfg.experiment_dir)
-
-    project_configs = []
-    for project in cfg.building_projects:
-        if cfg.design.ifc_file is not None and cfg.design.ifc_file is not None:
-            ifc_file_name_d = cfg.design.ifc_file
-            ifc_file_name_b = cfg.built.ifc_file
-        else:
-            print(f"Project {project} not found in current_models. Please provide the ifc file name.")
-            raise SystemExit
-        d_ifc = os.path.join(cfg.root_root_dir, "ifc_models", ifc_file_name_d)
-        b_ifc = os.path.join(cfg.root_root_dir, "ifc_models", ifc_file_name_b)
-        waypoint_file = os.path.join(cfg.root_root_dir, "waypoint_files", project+f"_{cfg.built.waypoints}")
-
-        cfg = update_config_value(cfg, ["project_name", project,
-                                  "root_dir", os.path.join(cfg.experiment_dir, project),
-                                  "design.ifc_file", ifc_file_name_d,
-                                  "built.ifc_file", ifc_file_name_b])
-
-
-
-
-        d_dir = os.path.join(cfg.root_dir, "d")
-        b_dir = os.path.join(cfg.root_dir, "b")
-        if not os.path.exists(d_dir):
-            os.makedirs(d_dir)
-            os.makedirs(b_dir)
-
-        # copy ifc into to d and b folders
-        shutil.copy(d_ifc, os.path.join(d_dir, ifc_file_name_d))
-        if not cfg.real:
-            shutil.copy(b_ifc, os.path.join(b_dir, ifc_file_name_b))
-            shutil.copy(waypoint_file, cfg.built.manual_waypoints_selection)
-
-
-
-        # make d and b folders and
-
-        yield cfg
-
-
-
-    """else:
-        print(f"Directory {cfg.experiment_dir} already exists.")
-        # end the program
-        raise SystemExit"""

@@ -1,26 +1,7 @@
 feature_tasks = ["centroid", "pca_and_extents"]
-mre_element_types = ["Wall", "Ceiling", 'Floor', 'Column', 'mech_plumb']  # "Floor", "Ceiling",
+mre_element_types = ["Wall", "Ceiling", 'Floor', 'Column']  # "Floor", "Ceiling",
 transition_element_types = ['Door', 'Window', 'Stair']
-# excluded'IfcOpeningElement',
 
-# current ifc models
-current_models = {
-"A" : "building_A_003_m.ifc",
-"B" : "building_B_cms.ifc",
-"C" : "building_C_dhub_eg_selection.ifc",
-"A_test": "building_A_test.ifc",
-"A_chairs": "building_A_chairs.ifc",
-"B_test": "building_B_cms_test.ifc",
-"Y": "building_Y.ifc",
-"C_test": "building_C_dhub_eg_selection_test.ifc",
-"C_bug": "building_C_dhub_eg_selection_bug2.ifc",
-"A_l-test": "building_A_003_m_l-shape_test.ifc",
-"A_graph-test": "building_A_003_m_graph-test.ifc",
-}
-
-
-
-#         'Openings': {'IfcOpeningElement': {}},
 
 internali2internalt = {
     1: 'Wall',
@@ -47,8 +28,30 @@ internali2internalt = {
     22: 'Bookshelf',
     23: 'Appliance',
     24: 'Space',
-    25: 'Proxy',
+    25: 'SpaceHeater',
+    26: 'Proxy',
     999: 'other'
+}
+
+internali2internalt_discipline = {
+    1: 'ARC',
+    2: 'PLB',
+    3: 'VTL',
+    4: 'EL',
+    5: 'FUR',
+    6: 'Rest',
+    999: 'other'
+}
+
+
+
+discipline_wise_classes = {
+    "ARC": ["Wall", "Floor", "Ceiling", "Door", "Window", "Column", "Stair"],
+    "PLB": ["Pipe", "Sink", "Toilet", "Sprinkler", "Tank"],
+    "VTL": ["Duct", "Air terminal"],
+    "EL": ["Light", "Alarm", "Sensor", "Outlet", "Switch"],
+    "FUR": ["Table", "Chair", "Bookshelf", "Appliance"],
+    "Rest": ["Space"]
 }
 
 # geometric features are calculated from a cluster of points and become attributes of the spg. The following dictionary translates the
@@ -63,7 +66,9 @@ sp_feature_translation_dict = {
 
 enrichment_feature_dict = {
     "label": "type_int",
-    "color": "color"
+    "color": "color",
+    "discipline": "discipline_int",
+    "room": "room_id",
 }
 
 int2color = {
@@ -92,6 +97,7 @@ int2color = {
     23: [39, 120, 164, 1.0],
     24: [200, 162, 89, 1.0],
     25: [121, 107, 0, 1.0],
+    26: [0, 0, 0, 1.0],
     999: [128, 60, 21, 1.0]
 }
 
@@ -105,8 +111,8 @@ discipline_colors = {
 }
 
 epsilon_threshold = {
-    'ARC': 0.2,
-    'PLB': 0.5,
+    'ARC': 0.08,
+    'PLB': 0.2,
     'VTL': 0.5,
     'EL': 0.5,
     'FUR': 0.7,

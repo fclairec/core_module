@@ -2,13 +2,12 @@ import importlib
 import pandas as pd
 import numpy as np
 import os
-from core_module.utils.general_functions import to_open3d, from_open3d
-
+from core_module.utils_general.general_functions import to_open3d, from_open3d
+from core_module.pem.PcPEM import PcPEM
 from plyfile import PlyData, PlyElement
 from pathlib import Path
 import laspy
 
-from core_module.pem.io import load_pem, save_pem
 
 """DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, os.path.join(DIR_PATH, ''))
@@ -28,8 +27,11 @@ class PCD:
     def __init__(self, pc_type=None):
         self.points = None
         self.instance_labels = None
+        self.type_int = None # class label
+        self.discipline_int = None
         self.colors = None
         self.pcd_files = None
+        self.point_indices_per_instance = {}
         self.preprocessing_steps_performed = []
         self.points_grouped_by_room = None
         self.pc_type = pc_type
@@ -46,35 +48,30 @@ class PCD:
             module = 0
             print(f"No module named '{module_name}' available.")
 
-        self.pcd_files = module.init_pcd_format(pcd_paths)
-        points = []
-        instance_labels = []
 
         for pcd_file in self.pcd_files:
-            generic_load = pd.read_csv(pcd_file, sep=module.seperator, header=0)
-            #set header as 'X Y Z intensity echoWidth returnNumber numberOfReturns fullwaveIndex hitObjectId class gpsTime\n')
-            generic_load.columns = ['X', 'Y', 'Z', 'intensity', 'echoWidth', 'returnNumber', 'numberOfReturns', 'fullwaveIndex', 'hitObjectId', 'class', 'gpsTime']
-            points_i = np.ascontiguousarray(generic_load[module.point_column_names], dtype='float32')
-            instance_labels_i = np.ascontiguousarray(generic_load[module.instance_label_column_name], dtype='uint32')
-            points.append(points_i)
-            instance_labels.append(instance_labels_i)
-        self.points = np.vstack(points)
-        self.instance_labels = np.vstack(instance_labels)
-        if module.colors_column_names is not None:
-            self.colors = np.ascontiguousarray(generic_load[module.colors_column_names], dtype='uint8')
-        else:
-            self.colors = np.zeros((self.points.shape[0], 3), dtype='uint8')
-        del generic_load
+            points, instance_labels = module.load(pcd_file)
+
+            self.incrememtal_pc_addition(points, instance_labels)
 
     def incrememtal_pc_addition(self, points, instance_labels):
         if self.points is None:
             self.points = points
             self.instance_labels = instance_labels
             self.colors = np.zeros((points.shape[0], 3), dtype='uint8')
+            self._update_point_indices_per_instance(np.unique(instance_labels))
         else:
             self.points = np.vstack((self.points, points))
             self.instance_labels = np.vstack((self.instance_labels, instance_labels))
             self.colors = np.vstack((self.colors, np.zeros((points.shape[0], 3), dtype='uint8')))
+            self._update_point_indices_per_instance(np.unique(instance_labels))
+
+    def _update_point_indices_per_instance(self, unique_labels):
+        for label in unique_labels:
+            self.point_indices_per_instance[label] = np.where(self.instance_labels == label)[0]
+
+
+
 
     def reindex_labels(self, save_id_to_file=True, project_element_map_file=None, step=1):
         """
@@ -166,6 +163,7 @@ class PCD:
         down_o3_pcd, _, _ = o3_pcd.voxel_down_sample_and_trace(voxel_size, min_bound, max_bound, approximate_class=True)
         self.points, self.instance_labels, self.colors = from_open3d(down_o3_pcd)
         self.preprocessing_steps_performed.append(f'downsampled_{voxel_size}')
+        self._update_point_indices_per_instance(np.unique(self.instance_labels))
 
     def output_point_cloud(self, project_element_map_file, downsampled_file_name, col_id="spg_label"):
         # prop = [('x', 'f4'), ('y', 'f4'), ('z', 'f4'), ('red', 'u1'), ('green', 'u1'), ('blue', 'u1'), ('s', 'i4'), ('s1', 'i4'), ('s2', 'i4')]
@@ -193,12 +191,28 @@ class PCD:
         # assemble file name with all preprocessing steps in self.preprocessing_steps_performed concatenated to string
         ply.write(downsampled_file_name)
 
-    def output_point_cloud_las(self, project_element_map_file, downsampled_file_name, col_id="spg_label"):
-        # Convert point data to LAS format
-        num_points = len(self.points)
+    def add_scalars_from_pem(self, pem_file, values):
+        pem = PcPEM(self.pc_type)
+        pem.load_pem(pem_file)
+
+        for value in values:
+            scalar_point_template = np.ones(len(self.points))*999
+            inst_attr = pem.get_physical_instances(value)
+            for inst_id, scalar in inst_attr.items():
+                indices = self.point_indices_per_instance[inst_id]
+                scalar_point_template[indices] = scalar
+            setattr(self, value, scalar_point_template)
+            if any(getattr(self, value)) == 999:
+                print(f"scalar {value} not assigned to all points. Review processing steps")
+
+
+
+    def output_point_cloud_las(self, downsampled_file_name):
 
         # Create a new LAS file
-        header = laspy.LasHeader(point_format=3, version="1.2")
+        header = laspy.LasHeader(version="1.4", point_format=6)
+        header.scales = [0.00001, 0.00001, 0.00001]  # X, Y, Z scales
+
         las = laspy.LasData(header)
 
         # Assign point coordinates
@@ -206,39 +220,18 @@ class PCD:
         las.y = self.points[:, 1]
         las.z = self.points[:, 2]
 
-        # Assign instance labels (s) and additional scalar (s1)
-        las.add_extra_dim(laspy.ExtraBytesParams(name="s", type=np.int32))
-        las.add_extra_dim(laspy.ExtraBytesParams(name="s1", type=np.int32))
-        las.s = self.instance_labels[:, 0]
+        # Assign instance labels (s) and type_int (s1) and discipline (s2)
+        las.add_extra_dim(laspy.ExtraBytesParams(name="instance", type=np.int32))
+        las.add_extra_dim(laspy.ExtraBytesParams(name="type", type=np.int32))
+        las.add_extra_dim(laspy.ExtraBytesParams(name="discipline", type=np.int32))
+        las.instance = self.instance_labels[:, 0]
+        las.type = self.type_int
+        las.discipline = self.discipline_int
 
-        # Add semantic type as additional channel
-        scalars = self.add_scalars_from_map(project_element_map_file=project_element_map_file, value="type_int",
-                                            id_column=col_id)
-        las.s1 = scalars
 
         # Write the LAS file
         las.write(downsampled_file_name)
 
-    def add_scalars_from_map(self, project_element_map_file, value, id_column="spg_label"):
-        """ find the class type point cloud according to the instance label"""
-        if self.pc_type == "bim_sampled":
-            pem = load_pem(project_element_map_file, mode="d")
-        else:
-            pem = load_pem(project_element_map_file, mode="b")
-            # delete all sp_label that are -1. and make spg_label the index
-            pem = pem[pem[id_column] != -1].set_index(id_column)
-        # find the class type point cloud according to the instance label
-        scalars = []
-        if value == "space_id":
-            print(
-                "careful when visualizing the space_id. Doors are assigned to muliples spaces and will receive a numpy based value here.")
-        for i in self.instance_labels:
-            try:
-                s = pem.loc[i[0], value]
-            except:
-                print(f"scalar value {value}:{i} not found in project element map. Review processing steps")
-            scalars.append(s)
-        return scalars
 
     def to_spg_format(self, computed_clusters=None):
         """ outputs the point cloud in a format needed for the SPG computation.

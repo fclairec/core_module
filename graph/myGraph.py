@@ -3,12 +3,15 @@ import numpy as np
 from collections import namedtuple
 from plyfile import PlyData, PlyElement
 from pathlib import Path
-from core_module.default_config.config import sp_feature_translation_dict, int2color, enrichment_feature_dict, internali2internalt
+from core_module.default_config.config import sp_feature_translation_dict, int2color, enrichment_feature_dict, internali2internalt, internali2internalt_discipline
 import copy
 import os
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-from core_module.pem.io import load_pem
+from core_module.default_config.config import discipline_wise_classes
+from core_module.utils_general.general_functions import invert_dict, invert_dict_simple
+from core_module.pem.IfcPEM import IfcPEM
+from core_module.pem.PcPEM import PcPEM
 
 
 class MyGraph():
@@ -19,31 +22,29 @@ class MyGraph():
         self.graph = nx.Graph()
         self.status = status
 
-    def enrich_graph(self, pem, enrichment_feature_dict, node_color):
+    def enrich_graph(self, pem_file, enrichment_feature_dict, node_color):
         """ enriches the graph with additional features"""
-        pem = load_pem(pem, mode=self.status)
+        if self.status == "d":
+            pem = IfcPEM()
+            pem.load_pem(pem_file)
+        else:
+            pem = PcPEM().load_pem(pem_file)
+        graph_node_ids = list(self.graph.nodes)
 
-        for enrichment_task, feature_names in enrichment_feature_dict.items():
-            if enrichment_task == 'label':
-                if self.status == "b":
-                    pem = pem[pem[['spg_label', feature_names]]["spg_label"]!=-1]
-                    nodeid_to_label = pem.set_index('spg_label')[feature_names].to_dict()
-                else:
-                    nodeid_to_label = pem[feature_names].to_dict()
-                # node_id
-                graph_node_ids = list(self.graph.nodes)
-                # get the labels for the nodes in the graph
-                labels = [nodeid_to_label[node_id] for node_id in graph_node_ids]
-                # add the labels to the graph
-                nx.set_node_attributes(self.graph, dict(zip(graph_node_ids, labels)), enrichment_task)
+        for enrichment_task, feature_name in enrichment_feature_dict.items():
+            if enrichment_task in ['label', 'discipline']:
+                features = pem.get_feature_vector(graph_node_ids, feature_name)
+                nx.set_node_attributes(self.graph, dict(zip(graph_node_ids, features)), enrichment_task)
+            elif enrichment_task == 'room':
+                features = pem.get_feature_vector(graph_node_ids, feature_name)
+                nx.set_node_attributes(self.graph, dict(zip(graph_node_ids, features)), enrichment_task)
             elif enrichment_task == 'color':
-                node_attr_dict = nx.get_node_attributes(self.graph, "label")
-                node_color_dict = {key: int2color[value] for key, value in node_attr_dict.items()}
-                del node_attr_dict
-                nx.set_node_attributes(self.graph, node_color_dict, enrichment_task)
+                features = pem.get_feature_vector(graph_node_ids, "type_int")
+                colors = [int2color[feature] for feature in features]
+                nx.set_node_attributes(self.graph, dict(zip(graph_node_ids, colors)), enrichment_task)
                 # output a legend for the colors in a png file
 
-                legend_patches = [mpatches.Patch(color=np.array(color)[:3] / 255, label=internali2internalt[label][0] + f"({label})") for label, color in int2color.items()]
+                legend_patches = [mpatches.Patch(color=np.array(color)[:3] / 255, label=internali2internalt[label] + f"({label})") for label, color in int2color.items()]
                 plt.figure(figsize=(5, 3))
                 plt.legend(handles=legend_patches, loc='center')
                 plt.axis('off')  # Turn off axes
@@ -51,6 +52,8 @@ class MyGraph():
                 # Save the legend as a PNG file
                 plt.savefig(node_color, bbox_inches='tight')
                 plt.close()
+
+
 
         #self.verify_graph(node_attrbs)
 
@@ -63,6 +66,31 @@ class MyGraph():
         # self.project_element_map = self.project_element_map.append(attributes, ignore_index=True)
         print(f"adding node")
         return new_node_id
+
+    def add_custom_nodes(self, node_ids, attributes):
+        """function should add a node to the graph with the given adjacencies and features. It also adds the node to
+        the project element map"""
+        # get a new node id that is not already in the graph
+        graph_ids = []
+        for node_id, attrs in zip(node_ids, attributes):
+            if len(self.graph.nodes()) != 0:
+                new_node_id = max(self.graph.nodes()) + 1
+            else:
+                new_node_id = 0
+            graph_ids.append(new_node_id)
+            self.graph.add_node(new_node_id, **attrs)
+        # self.project_element_map = self.project_element_map.append(attributes, ignore_index=True)
+        print(f"adding nodes")
+        return graph_ids
+
+    def add_custom_edges(self, edges):
+        for edge in edges:
+            self.graph.add_edge(*edge)
+
+
+
+
+
 
     def find_shared_adjacencies(self, node_id, node_id2):
         """ function should find the node by the id given, then check their adjacencies and return the shared ones"""
