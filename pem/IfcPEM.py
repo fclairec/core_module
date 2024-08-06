@@ -75,15 +75,17 @@ class IfcPEM(PEM):
 
     def update_element_room_affiliation(self, updated_instances: InstanceCollection):
         for _, instance in updated_instances.element_instances.items():
-            adj_space = self.space_id_adjacency[instance.guid_int]
-            ctn_space = self.space_id_containment[instance.guid_int]
+            pos = self.guid_int.index(instance.guid_int)
+            adj_space = self.space_id_adjacency[pos]
+            ctn_space = self.space_id_containment[pos]
             rel_spaces = ast.literal_eval(adj_space) + ast.literal_eval(ctn_space)
-            if len(rel_spaces) == 1:
+            self.update_instance_attribute(pos, **{"room_id": rel_spaces})
+            """if len(rel_spaces) == 1:
                 self.update_instance_attribute(instance.guid_int, **{"room_id": rel_spaces[0]})
             else:
                 integ = updated_instances.space_instances.keys()
                 new_id = max(integ) + 1
-                self.update_instance_attribute(instance.guid_int, **{"room_id": new_id})
+                self.update_instance_attribute(instance.guid_int, **{"room_id": new_id})"""
 
         for _, instance in updated_instances.space_instances.items():
             self.update_instance_attribute(instance.guid_int, **{"room_id": instance.guid_int})
@@ -103,6 +105,8 @@ class IfcPEM(PEM):
             for guid_int in sp_el_guids:
                 if self.get_instance_entry(guid_int)["type_txt"] in transition_element_types:
                     spanning_elements_maks[self.guid_int.index(guid_int)] = False
+                elif self.get_instance_entry(guid_int)["type_txt"] == "Space":
+                    spanning_elements_maks[self.guid_int.index(guid_int)] = False # space can not be spanning
                 else:
                     spanning_elements_maks[self.guid_int.index(guid_int)] = True
             sp_el_guids = np.array(self.guid_int)[spanning_elements_maks].tolist()

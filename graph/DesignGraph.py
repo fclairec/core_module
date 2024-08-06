@@ -2,6 +2,7 @@ from core_module.graph.myGraph import MyGraph
 import pandas as pd
 import numpy as np
 import networkx as nx
+import ast
 from core_module.pem.IfcPEM import IfcPEM
 
 
@@ -11,7 +12,7 @@ class DesignGraph(MyGraph):
         super().__init__("d")
         self.type_g = "d"
 
-    def assemble_graph_files(self, cfg, adjacency_type, selected_guids=[], feats=True):
+    def assemble_graph_files(self, cfg, adjacency_type, selected_guids=[], feats=True, rooms=False):
         # check if all files are there. Adjacency, features, element_map
         features_file = cfg.features_file
         # TODO change for built
@@ -48,16 +49,23 @@ class DesignGraph(MyGraph):
         _right_node = adjacency["End_node"].to_numpy().flatten()
         edge_pairs = list(map(tuple, np.stack((_left_nodes, _right_node), axis=1)))
 
-        # add element to room edges
-        room_edges = []
-        for guid_int in selected_guids:
-            pem_entry = pem.get_instance_entry(guid_int)
-            room_id = pem_entry["room_id"]
-            room_edges.append((guid_int, int(room_id)))
+        # add element to room edges if spaces are included
+        if rooms:
+            room_edges = []
+            for guid_int in selected_guids:
+                pem_entry = pem.get_instance_entry(guid_int)
+                if pem_entry["type_txt"] != "Space":
+                    room_id = pem_entry["room_id"]
+                    room_id_list = ast.literal_eval(room_id)
 
+                    for id in room_id_list:
+                        room_edges.append((guid_int, int(id)))
+                else:
+                    continue
 
-        
-        self.graph.add_edges_from(edge_pairs + room_edges)
+            self.graph.add_edges_from(edge_pairs + room_edges)
+        else:
+            self.graph.add_edges_from(edge_pairs)
 
 
 
@@ -74,7 +82,7 @@ class DesignGraph(MyGraph):
 
                 if pem_entry["type_txt"] == "Space":
                     feats = features.loc[guid_int].to_dict()
-                    feats["cp_z"] += 4
+                    feats["cp_z"] += 6
                     node_attribute_dict[guid_int] = feats
                 else:
                     node_attribute_dict[guid_int] = features.loc[guid_int].to_dict()
