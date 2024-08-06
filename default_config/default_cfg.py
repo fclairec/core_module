@@ -80,7 +80,7 @@ def setup_paths(_C, ensure_paths=True):
     # helios simulation
     _C.built.simulation.directory = osp.join(_C.built.root_dir, "helios")
     _C.built.simulation.results_directory = osp.join(_C.built.simulation.directory, "results")
-    _C.built.simulation.total_pcd_filename = osp.join(_C.built.root_dir, "b_simulated_pcd.xyz")
+    _C.built.simulation.total_pcd_filename = osp.join(_C.built.root_dir, "b_simulated_pcd.las")
     _C.built.simulation.total_trajectory_filename = osp.join(_C.built.root_dir, "full_trajectory.txt")
 
 
