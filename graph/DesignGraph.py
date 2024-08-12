@@ -4,6 +4,7 @@ import numpy as np
 import networkx as nx
 import ast
 from core_module.pem.IfcPEM import IfcPEM
+import warnings
 
 
 class DesignGraph(MyGraph):
@@ -56,7 +57,11 @@ class DesignGraph(MyGraph):
                 pem_entry = pem.get_instance_entry(guid_int)
                 if pem_entry["type_txt"] != "Space":
                     room_id = pem_entry["room_id"]
-                    room_id_list = ast.literal_eval(room_id)
+                    try:
+                        room_id_list = ast.literal_eval(room_id)
+                    except:
+                        warnings.warn(f"room_id {room_id} could not be converted to list. Skipping.")
+                        room_id_list = []
 
                     for id in room_id_list:
                         room_edges.append((guid_int, int(id)))
