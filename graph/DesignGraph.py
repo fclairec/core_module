@@ -87,7 +87,7 @@ class DesignGraph(MyGraph):
 
                 if pem_entry["type_txt"] == "Space":
                     feats = features.loc[guid_int].to_dict()
-                    feats["cp_z"] += 6
+                    feats["cp_z"] += 6 # room node shift to be above the element
                     node_attribute_dict[guid_int] = feats
                 else:
                     node_attribute_dict[guid_int] = features.loc[guid_int].to_dict()
@@ -105,12 +105,6 @@ class DesignGraph(MyGraph):
             node_attribute_dict[guid_int]["ifc_guid"] = pem_entry["ifc_guid"]
             # add the node type
             node_attribute_dict[guid_int]["node_type"] = pem_entry["instance_type"]
-            # add property "has_face"
-            node_attribute_dict[guid_int]["has_face"] = 0 if np.isnan(pem_entry["associated_face"]) else 1
-
-
-
-
 
         return node_attribute_dict
 

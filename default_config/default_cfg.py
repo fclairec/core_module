@@ -3,6 +3,7 @@ from yacs.config import CfgNode as CN
 from core_module.utils_general import common
 import yaml
 import shutil
+from pathlib import Path
 
 
 
@@ -139,6 +140,12 @@ def create_paths(cfg):
         # copy ifc
         d_ifc = osp.join(cfg.ifc_pool, cfg_s.ifc_file)
         shutil.copy(d_ifc, cfg_s.ifc_file_path)
+
+        d_ifc_spaces = Path(d_ifc).parent / (Path(d_ifc).stem + "_spaces.ifc")
+        if d_ifc_spaces.exists():
+            dst_spaces_file = Path(cfg_s.ifc_file_path).parent / (Path(cfg_s.ifc_file_path).stem + "_spaces.ifc")
+            shutil.copy(d_ifc_spaces, dst_spaces_file)
+
 
         if mode == "built":
             # copy waypoints

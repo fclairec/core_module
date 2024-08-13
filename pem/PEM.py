@@ -1,5 +1,6 @@
 import pandas as pd
 from core_module.utils_general.general_functions import invert_dict_list
+import ast
 
 
 class PEM:
@@ -21,7 +22,6 @@ class PEM:
         self.composing_elements = []
         self.room_id = []
         self.guid_txt = []
-        self.associated_face = []
         self.pcd = []
 
     def update(self, **kwargs):
