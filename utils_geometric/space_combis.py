@@ -9,7 +9,7 @@ from core_module.utils_general.general_functions import invert_dict_simple
 def get_possible_room_combinations(cfg, nb=2, limit_room_repetition=True):
     # load graph and get adjacent rooms
     PCGraphObject = PCGraph()
-    PCGraphObject.load_graph_from_pickle(cfg.built.space_graph)
+    PCGraphObject.load_graph_from_pickle(cfg.space_graph)
 
     g = PCGraphObject.graph
 
