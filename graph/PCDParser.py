@@ -73,7 +73,7 @@ class PCD:
 
 
 
-    def reindex_labels(self, save_id_to_file=True, project_element_map_file=None, step=1):
+    def reindex_labels(self, pem_file=None, step=1):
         """
         Reindex the labels of the point cloud to the internal label format that goes from 0 to n_classes.
         This is needed for the SPG method to work.
@@ -88,56 +88,18 @@ class PCD:
         if labels_initial[0] == 0 and labels_initial[-1] == len(labels_initial) - 1:
             print(f"labels are already continuous and start at 0. No reindexing needed.")
             return
-        new_instance_labels = indices.reshape((-1, 1))
 
-        if save_id_to_file:
-            # check if project element file exists
-            new_vs_old = pd.DataFrame(
-                {'old': self.instance_labels.flatten(), 'new': new_instance_labels.flatten()})
+        old_new_dict = {key: value for key, value in zip(labels_initial, range(len(labels_initial)))}
 
-            if os.path.exists(project_element_map_file):
-                # load project element map
-                project_element_map = pd.read_csv(project_element_map_file, sep=',', header=0, index_col=0)
+        pem = PcPEM(self.pc_type)
+        pem.load_pem(pem_file)
 
-                # if project_element_map already has column "spg_label", we merge on that. this happens when we are in
-                # the second reindexing phase
-                if step == 2:
-                    left_key = "spg_label"
-                else:
-                    left_key = "guid_int"
+        pem.reindex_spg_label(old_new_dict)
 
-                result = project_element_map.merge(new_vs_old, left_on=left_key, right_on='old', how='left')
-                result = result.drop_duplicates(subset=['guid_int', 'new'], keep='first').reset_index(drop=True)
+        pem.save_pem(pem_file)
 
-                assert result.shape[0] == project_element_map.shape[0]
-
-
-                #result['new'] = result['new'].fillna(-1).astype(int)
-                if step==2:
-                    # incase left from before
-                    result = result.drop("spg_label", axis=1)
-
-                result = result.rename(columns={'new': 'spg_label'}).drop('old', axis=1)
-
-                # remove rows with spg_label = nan
-                result = result[result['spg_label'].notna()]
-                # reset index
-                result = result.reset_index(drop=True)
-                result['spg_label'] = result['spg_label'].astype(int)
-
-                # delete the old project_element_map_file
-                os.remove(project_element_map_file)
-
-                #result.to_csv(project_element_map_file, index=True, header=True, sep=',')
-                save_pem(project_element_map_file, result, mode="b")
-                a = 0
-            else:
-                # rename column instance_label_int_new to spg_label in new_vs_old
-                new_vs_old = new_vs_old.rename(columns={'new': 'spg_label', 'old': 'guid_int'})
-                # save to file
-                #new_vs_old.to_csv(project_element_map_file, index=True, header=True, sep=',')
-                save_pem(project_element_map_file, new_vs_old, mode="b")
-        self.instance_labels = new_instance_labels
+        self.instance_labels = indices.reshape((-1, 1))
+        self._update_point_indices_per_instance(np.unique(self.instance_labels))
         self.preprocessing_steps_performed.append('reindex_labels')
 
     def clean(self):
@@ -287,7 +249,7 @@ class PCD:
             #prem_room.to_csv(subset_pem_filename, index=True, header=True, sep=',')
             save_pem(subset_pem_filename, prem_room, mode="b")
 
-            room_pcd.reindex_labels(True, subset_pem_filename, 2)
+            room_pcd.reindex_labels(subset_pem_filename, 2)
             room_pcd.output_point_cloud(subset_pem_filename, subset_pcd_filename, col_id="spg_label")
 
             # save subset features to subset_feat
@@ -320,7 +282,7 @@ if __name__ == '__main__':
     project_element_map = Path("/home/appuser/input_data/base/built_test/project_element_map.csv")
     PointCloudObject = PCD()
     PointCloudObject.parse_pcd(file_path, "helios")
-    PointCloudObject.reindex_labels(save_id_to_file=True, project_element_map_file=project_element_map)
+    PointCloudObject.reindex_labels(pem_file=project_element_map)
     PointCloudObject.output_point_cloud(typed=False)
 
     format_pcd_4_spg = PointCloudObject.to_spg_format()

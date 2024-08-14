@@ -20,7 +20,7 @@ class MyGraph():
         self.graph = nx.Graph()
         self.status = status
 
-    def enrich_graph(self, pem_file, enrichment_feature_dict, node_color):
+    def enrich_graph(self, pem_file, enrichment_feature_dict, node_color, pem_type=None):
         """ enriches the graph with additional features"""
         if self.status == "d":
             from core_module.pem.IfcPEM import IfcPEM
@@ -28,7 +28,8 @@ class MyGraph():
             pem.load_pem(pem_file)
         else:
             from core_module.pem.PcPEM import PcPEM
-            pem = PcPEM().load_pem(pem_file)
+            pem = PcPEM(pem_type)
+            pem.load_pem(pem_file)
         graph_node_ids = list(self.graph.nodes)
 
         for enrichment_task, feature_name in enrichment_feature_dict.items():
