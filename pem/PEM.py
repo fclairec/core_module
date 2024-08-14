@@ -108,7 +108,10 @@ class PEM:
         return instance_attributes
 
     def assign_new_guid(self):
-        return max(self.guid_int) + 1
+        if len(self.guid_int) == 0:
+            return 0
+        else:
+            return max(self.guid_int) + 1
 
 
     def save_pem(self, pem_file):
