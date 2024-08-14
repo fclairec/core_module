@@ -10,8 +10,6 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from core_module.default_config.config import discipline_wise_classes
 from core_module.utils_general.general_functions import invert_dict, invert_dict_simple
-from core_module.pem.IfcPEM import IfcPEM
-from core_module.pem.PcPEM import PcPEM
 
 
 class MyGraph():
@@ -25,9 +23,11 @@ class MyGraph():
     def enrich_graph(self, pem_file, enrichment_feature_dict, node_color):
         """ enriches the graph with additional features"""
         if self.status == "d":
+            from core_module.pem.IfcPEM import IfcPEM
             pem = IfcPEM()
             pem.load_pem(pem_file)
         else:
+            from core_module.pem.PcPEM import PcPEM
             pem = PcPEM().load_pem(pem_file)
         graph_node_ids = list(self.graph.nodes)
 

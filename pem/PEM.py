@@ -35,7 +35,7 @@ class PEM:
                 raise AttributeError(f"{key} is not a valid attribute of {self.__class__.__name__}.")
         # add dummy values for missing attributes except for mode
         for key in self.__dict__.keys():
-            if key == "mode":
+            if key in ["mode", "inst_types_all", "pc_type"]:
                 continue
             elif key not in kwargs.keys():
                 attr = getattr(self, key)
@@ -70,7 +70,7 @@ class PEM:
 
     def get_instance_entry(self, guid_int):
         position = self.guid_int.index(guid_int)
-        instance = {key: value[position] for key, value in self.__dict__.items() if key not in ["mode", "inst_types_all"]}
+        instance = {key: value[position] for key, value in self.__dict__.items() if key not in ["mode", "inst_types_all", "pc_type"]}
         return instance
 
     def get_instance_guids_by_type(self, instance_type):
