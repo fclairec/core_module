@@ -118,11 +118,7 @@ class PEM:
     def save_pem(self, pem_file):
         pem_dict = {key: value for key, value in self.__dict__.items() if key not in ["mode", "inst_types_all"]}
         pem = pd.DataFrame(pem_dict)
-        if self.mode == "d":
-            pem.to_csv(pem_file, index=False)
-
-        elif self.mode == "b":
-            pem.to_csv(pem_file, index=False)
+        pem.to_csv(pem_file, index=False)
 
     def get_feature_vector(self, guids, feature_name):
         feature_vector = [getattr(self, feature_name)[self.guid_int.index(guid)] for guid in guids]
@@ -132,14 +128,8 @@ class PEM:
         """load project element map from file
         :param pem_file: path to the project element map
         :param mode: design or built"""
-        if self.mode == "d":
-            pem = pd.read_csv(pem_file, sep=',', header=0)
 
-        elif self.mode == "b":
-            # we can not set spg_label as index because ...
-            pem = pd.read_csv(str(pem_file), sep=',', header=0)
-        else:
-            raise ValueError("mode must be either 'd' or 'b'")
+        pem = pd.read_csv(str(pem_file), sep=',', header=0)
 
         # add pem to attributes
         self.__dict__.update(pem.to_dict(orient='list'))
