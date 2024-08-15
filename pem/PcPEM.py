@@ -2,7 +2,12 @@ from core_module.pem.PEM import PEM
 
 class PcPEM(PEM):
     def __init__(self, pcd_type):
-        mode = "d" if pcd_type == "bim_sampled" else "p"
+        if pcd_type == "bim_sampled":
+            mode = "d"
+        elif pcd_type == "helios":
+            mode = "b"
+        elif pcd_type == "real":
+            mode = "b"
         super().__init__(mode)
         self.pc_type = pcd_type
 

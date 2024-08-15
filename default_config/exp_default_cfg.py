@@ -15,7 +15,6 @@ _C.real_point_cloud_pool = '/home/appuser/input_data/experiments/real_point_clou
 _C.building_project = "A"
 
 
-
 _C.design = CN()
 _C.design.setup_name = "setup_default"
 _C.design.ifc_file = "setup_default"

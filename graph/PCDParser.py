@@ -199,6 +199,9 @@ class PCD:
             scalar_point_template = np.ones(len(self.points))*999
             inst_attr = pem.get_physical_instances(value)
             for inst_id, scalar in inst_attr.items():
+                if inst_id not in self.point_indices_per_instance:
+                    print(f"instance {inst_id} not covered by point cloud. Replace waypoints if needed")
+                    continue
                 indices = self.point_indices_per_instance[inst_id]
                 scalar_point_template[indices] = scalar
             setattr(self, value, scalar_point_template)
