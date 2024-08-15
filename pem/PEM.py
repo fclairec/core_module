@@ -122,7 +122,7 @@ class PEM:
             pem.to_csv(pem_file, index=False)
 
         elif self.mode == "b":
-            pem.to_csv(pem_file, index=True)
+            pem.to_csv(pem_file, index=False)
 
     def get_feature_vector(self, guids, feature_name):
         feature_vector = [getattr(self, feature_name)[self.guid_int.index(guid)] for guid in guids]

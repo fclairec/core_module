@@ -30,39 +30,38 @@ class PCGraph(MyGraph):
          :param project_element_map_filename: path to project element map for looking up initial instance labels"""
 
         # node ids
-        spg_ids = np.argmax(spg.graph_sp['sp_labels'], axis=1)
+        guid_int = np.argmax(spg.graph_sp['sp_labels'], axis=1)
         #initial_labels = retrieve_initial_label(spg_ids, project_element_map_filename)
-        node_ids = spg_ids
+        node_ids = guid_int
 
         # node features (as a possible subset of all features from SPG, can be extended if needed)
         # TODO extend this with whole from config
         node_features= pd.DataFrame()
         for task, feature_translation in sp_feature_translation_dict.items():
-            spg_names = feature_translation["SPG"]
+            spg_feat_names = feature_translation["SPG"]
             my_names = feature_translation["myGraph"]
             node_features_task = pd.DataFrame()
 
-            for i, spg_name in enumerate(spg_names):
-                factor = len(my_names) // len(spg_names)
+            for i, spg_feat_name in enumerate(spg_feat_names):
+                factor = len(my_names) // len(spg_feat_names)
                 if factor == 3:
                     for j in range(3):
-                        node_features_task[my_names[i * factor + j]] = [point[j] for point in spg.graph_sp[spg_name]]
+                        node_features_task[my_names[i * factor + j]] = [point[j] for point in spg.graph_sp[spg_feat_name]]
                 elif factor == 1:
-                    node_features_task[my_names[i]] = spg.graph_sp[spg_name]
+                    node_features_task[my_names[i]] = spg.graph_sp[spg_feat_name]
 
             node_features = pd.concat([node_features, node_features_task], axis=1)
 
-        # reindex
         node_features.reset_index(inplace=True)
-        node_features.rename(columns={'index': 'spg_label'}, inplace=True)
+        node_features.rename(columns={'index': 'guid_int'}, inplace=True)
         node_features.to_csv(split_features_file, index=True, header=True)
 
         node_attributes = {}
-        for spg_id in spg_ids:
-            node_attributes[spg_id] = node_features.loc[node_features['spg_label'] == spg_id].to_dict('records')[0]
+        for spg_id in guid_int:
+            node_attributes[spg_id] = node_features.loc[node_features['guid_int'] == spg_id].to_dict('records')[0]
 
         # edges
-        spid_2_nodeid = dict(zip(spg_ids, node_ids))
+        spid_2_nodeid = dict(zip(guid_int, node_ids))
         _edge_pairs_sp_ids = list(zip(spg.graph_sp['source'].flatten(), spg.graph_sp['target'].flatten()))
         edge_pairs = [(spid_2_nodeid[i], spid_2_nodeid[j]) for i, j in _edge_pairs_sp_ids]
 

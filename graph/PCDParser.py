@@ -71,9 +71,7 @@ class PCD:
             self.point_indices_per_instance[label] = np.where(self.instance_labels == label)[0]
 
 
-
-
-    def reindex_labels(self, pem_file=None, step=1):
+    def reindex_labels(self, pem_file=None):
         """
         Reindex the labels of the point cloud to the internal label format that goes from 0 to n_classes.
         This is needed for the SPG method to work.
@@ -93,9 +91,7 @@ class PCD:
 
         pem = PcPEM(self.pc_type)
         pem.load_pem(pem_file)
-
         pem.reindex_spg_label(old_new_dict)
-
         pem.save_pem(pem_file)
 
         self.instance_labels = indices.reshape((-1, 1))
@@ -126,32 +122,6 @@ class PCD:
         self.points, self.instance_labels, self.colors = from_open3d(down_o3_pcd)
         self.preprocessing_steps_performed.append(f'downsampled_{voxel_size}')
         self._update_point_indices_per_instance(np.unique(self.instance_labels))
-
-    def output_point_cloud(self, project_element_map_file, downsampled_file_name, col_id="spg_label"):
-        # prop = [('x', 'f4'), ('y', 'f4'), ('z', 'f4'), ('red', 'u1'), ('green', 'u1'), ('blue', 'u1'), ('s', 'i4'), ('s1', 'i4'), ('s2', 'i4')]
-        prop = [('x', 'f4'), ('y', 'f4'), ('z', 'f4'), ('s', 'i4'), ('s1', 'i4')]
-        vertex_all = np.empty(len(self.points), dtype=prop)
-        for i_prop in range(0, 3):
-            vertex_all[prop[i_prop][0]] = self.points[:, i_prop]
-        """for i_prop in range(0, 3):
-            vertex_all[prop[i_prop + 3][0]] = self.colors[:, i_prop]"""
-
-        # spg labels
-        vertex_all[prop[3][0]] = self.instance_labels[:, 0]
-
-        # add semantic type as additional channel
-        scalars = self.add_scalars_from_map(project_element_map_file=project_element_map_file, value="type_int", id_column=col_id)
-        vertex_all[prop[4][0]] = scalars
-
-        """# add room id as additional channel
-        scalars = self.add_scalars_from_map(project_element_map_file=project_element_map_file, value="space_id")
-        vertex_all[prop[8][0]] = scalars
-        """
-        # add
-
-        ply = PlyData([PlyElement.describe(vertex_all, 'vertex')], text=True)
-        # assemble file name with all preprocessing steps in self.preprocessing_steps_performed concatenated to string
-        ply.write(downsampled_file_name)
 
     def add_scalars_from_pem(self, pem_file, values):
         pem = PcPEM(self.pc_type)
@@ -225,48 +195,6 @@ class PCD:
 
 
 
-
-    def split_pcd_by_room(self, built_pem_file, b_features_file, subset_pcd_template, subset_pem_template, subset_feat_template, super_points_by_room):
-        """ function outputs a point cloud object by room into a seperate folder"""
-        sub_clouds = []
-        room_ids = []
-        geom_features = pd.read_csv(b_features_file, sep=',', header=0, index_col=0)
-        for room_id, spg_labels in super_points_by_room.items():
-            point_selection = np.isin(self.instance_labels.flatten(), spg_labels)
-            room_points = self.points[point_selection]
-            room_instance_labels = self.instance_labels[point_selection]
-
-            room_pcd = PCD()
-            room_pcd.points = room_points
-            room_pcd.instance_labels = room_instance_labels
-
-            subset_pcd_filename = str(subset_pcd_template).format(room_id, room_id)
-            subset_pem_filename = str(subset_pem_template).format(room_id, room_id)
-            if not os.path.exists(subset_pcd_filename):
-                os.makedirs(Path(subset_pcd_filename).parent)
-            else:
-                return ValueError(f"subset path {subset_pcd_filename} already exists. Review processing steps")
-
-            pem = pd.read_csv(built_pem_file, sep=',', header=0, index_col=0)
-            prem_room = pem[pem['spg_label'].isin(spg_labels)]
-            #prem_room.to_csv(subset_pem_filename, index=True, header=True, sep=',')
-            save_pem(subset_pem_filename, prem_room, mode="b")
-
-            room_pcd.reindex_labels(subset_pem_filename, 2)
-            room_pcd.output_point_cloud(subset_pem_filename, subset_pcd_filename, col_id="spg_label")
-
-            # save subset features to subset_feat
-            subset_feat_filename = str(subset_feat_template).format(room_id, room_id)
-            subset_feats = geom_features.loc[spg_labels]
-            # write to csv with new index
-            subset_feats.reset_index(drop=True, inplace=True)
-            subset_feats.to_csv(subset_feat_filename, index=True, header=True, sep=',')
-
-
-            sub_clouds.append(room_pcd)
-            room_ids.append(room_id)
-
-        return sub_clouds, room_ids
 
 
 
