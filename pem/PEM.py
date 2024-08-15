@@ -1,5 +1,6 @@
 import pandas as pd
 from core_module.utils_general.general_functions import invert_dict_list
+import ast
 
 
 class PEM:
@@ -17,15 +18,12 @@ class PEM:
         self.instance_type = []
         self.ifc_guid = []
         self.space_id = []
-        self.spanning_element = []
-        self.space_id_adjacency = []
-        self.space_id_containment = []
         self.parent_element = []
         self.composing_elements = []
         self.room_id = []
         self.guid_txt = []
-        self.associated_face = []
         self.pcd = []
+        self.match_id = []
 
     def update(self, **kwargs):
         self.check_minimum_attr(kwargs)
@@ -38,7 +36,7 @@ class PEM:
                 raise AttributeError(f"{key} is not a valid attribute of {self.__class__.__name__}.")
         # add dummy values for missing attributes except for mode
         for key in self.__dict__.keys():
-            if key == "mode":
+            if key in ["mode", "inst_types_all", "pc_type"]:
                 continue
             elif key not in kwargs.keys():
                 attr = getattr(self, key)
@@ -73,7 +71,7 @@ class PEM:
 
     def get_instance_entry(self, guid_int):
         position = self.guid_int.index(guid_int)
-        instance = {key: value[position] for key, value in self.__dict__.items() if key not in ["mode", "inst_types_all"]}
+        instance = {key: value[position] for key, value in self.__dict__.items() if key not in ["mode", "inst_types_all", "pc_type"]}
         return instance
 
     def get_instance_guids_by_type(self, instance_type):
@@ -111,7 +109,10 @@ class PEM:
         return instance_attributes
 
     def assign_new_guid(self):
-        return max(self.guid_int) + 1
+        if len(self.guid_int) == 0:
+            return 0
+        else:
+            return max(self.guid_int) + 1
 
 
     def save_pem(self, pem_file):
@@ -142,6 +143,14 @@ class PEM:
 
         # add pem to attributes
         self.__dict__.update(pem.to_dict(orient='list'))
+
+        # make sure that all attributes are lists of same lenghth, if not add None n times
+        for key in self.__dict__.keys():
+            if key in ["mode", "inst_types_all", "pc_type"]:
+                continue
+            elif len(self.guid_int) != len(self.__dict__[key]):
+                self.__dict__[key] += [None] * (len(self.guid_int) - len(self.__dict__[key]))
+        a=0
 
     def __str__(self):
         return f"ProjectElementMap)"
