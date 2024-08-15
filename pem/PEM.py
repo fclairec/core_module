@@ -144,5 +144,13 @@ class PEM:
         # add pem to attributes
         self.__dict__.update(pem.to_dict(orient='list'))
 
+        # make sure that all attributes are lists of same lenghth, if not add None n times
+        for key in self.__dict__.keys():
+            if key in ["mode", "inst_types_all", "pc_type"]:
+                continue
+            elif len(self.guid_int) != len(self.__dict__[key]):
+                self.__dict__[key] += [None] * (len(self.guid_int) - len(self.__dict__[key]))
+        a=0
+
     def __str__(self):
         return f"ProjectElementMap)"
