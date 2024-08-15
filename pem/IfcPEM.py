@@ -72,6 +72,7 @@ class IfcPEM(PEM):
 
         if step == "split":
             for instance in instance_collection.unindexed_faces + instance_collection.unindexed_segments:
+                instance.update_match_id()
                 guid_int = self.assign_new_guid()
                 instance.index_instance(guid_int)
                 self.add_instance_entry(instance.output_instance_map())
@@ -93,6 +94,9 @@ class IfcPEM(PEM):
 
         else:
             for instance in instance_collection.unindexed_aggregates:
+                composing_el_id = instance_collection.get_instances(instance.composing_elements)
+                match_id = "_".join([el.match_id for el in composing_el_id])
+                instance.update_match_id(match_id)
                 guid_int = self.assign_new_guid()
                 instance.index_instance(guid_int)
                 self.add_instance_entry(instance.output_instance_map())

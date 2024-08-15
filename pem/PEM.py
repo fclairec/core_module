@@ -23,6 +23,7 @@ class PEM:
         self.room_id = []
         self.guid_txt = []
         self.pcd = []
+        self.match_id = []
 
     def update(self, **kwargs):
         self.check_minimum_attr(kwargs)
