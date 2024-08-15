@@ -1,5 +1,4 @@
 from core_module.pem.PEM import PEM
-from instance_classes.InstanceCollection import InstanceCollection
 import ast
 import numpy as np
 from core_module.default_config.config import transition_element_types
@@ -66,7 +65,7 @@ class IfcPEM(PEM):
 
 
 
-    def add_splitmerge_results(self, instance_collection: InstanceCollection, step: str, failed_pairs=None):
+    def add_splitmerge_results(self, instance_collection, step: str, failed_pairs=None):
         """ function that adds new instances from splitmerge to the PEM and updates the rewritten ones in the
         corresponding attribute"""
 
@@ -131,7 +130,7 @@ class IfcPEM(PEM):
 
 
 
-    def update_room_affiliation(self, updated_instances: InstanceCollection):
+    def update_room_affiliation(self, updated_instances):
         for _, instance in updated_instances.element_instances.items():
             pos = self.guid_int.index(instance.guid_int)
 
