@@ -124,6 +124,7 @@ def create_paths(cfg):
     """
     if not osp.exists(cfg.root_dir):
         common.ensure_dir(cfg.root_dir)
+    if not osp.exists(cfg.log_dir):
         common.ensure_dir(cfg.log_dir)
 
     #mode = "d" if cfg.design.setup_name != "setup_default" elif cfg.built.setup_name != "setup_default" else None
