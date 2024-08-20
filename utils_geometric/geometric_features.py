@@ -39,7 +39,7 @@ def pca_and_extents(pcd, bbox):
                      , [bbox.YDirection().X(), bbox.YDirection().Y(), bbox.YDirection().Z()]
                      ,[bbox.ZDirection().X(), bbox.ZDirection().Y(), bbox.ZDirection().Z()]]
 
-        extent_xyz = [bbox.XHSize(), bbox.YHSize(), bbox.ZHSize()]
+        extent_xyz = [2*bbox.XHSize(), 2*bbox.YHSize(), 2*bbox.ZHSize()]
 
         # from 1, 2,3 . descending order
         pca_order = np.argsort(extent_xyz)[::-1]
