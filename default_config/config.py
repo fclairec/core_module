@@ -69,6 +69,7 @@ enrichment_feature_dict = {
     "color": "color",
     "discipline": "discipline_int",
     "room": "room_id",
+    "edge_length": "edge_length",
 }
 
 int2color = {
