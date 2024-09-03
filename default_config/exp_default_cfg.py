@@ -53,6 +53,7 @@ _C.built.waypoints = "general.txt"
 _C.built.simulation = CN()
 _C.built.simulation.test = False
 _C.built.simulation.accuracy = 0.005
+_C.built.simulation.output_legs = False
 
 _C.built.subsets = CN()
 _C.built.subsets.split_type = ["wp"]
