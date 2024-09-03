@@ -42,6 +42,8 @@ def get_space_graph(cfg, instance_collection: InstanceCollection):
     SpaceGraph = DesignGraph()
 
     SpaceGraph.assemble_graph_files(cfg, "element", selected_guid_ints, False, False)
+
+    enrichment_feature_dict.pop("edge_length", None)
     SpaceGraph.enrich_graph(cfg.pem_file, enrichment_feature_dict, cfg.node_color_legend_file)
     SpaceGraph.graph_to_pkl(cfg.space_graph)
     # plot a networkx graph

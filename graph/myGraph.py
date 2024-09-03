@@ -53,6 +53,12 @@ class MyGraph():
                 # Save the legend as a PNG file
                 plt.savefig(node_color, bbox_inches='tight')
                 plt.close()
+            elif enrichment_task == 'edge_length':
+                for edge in self.graph.edges:
+                    start_pos = np.array([self.graph.nodes[edge[0]]["cp_x"], self.graph.nodes[edge[0]]["cp_y"], self.graph.nodes[edge[0]]["cp_z"]])
+                    end_pos = np.array([self.graph.nodes[edge[1]]["cp_x"], self.graph.nodes[edge[1]]["cp_y"], self.graph.nodes[edge[1]]["cp_z"]])
+                    length = np.linalg.norm(start_pos - end_pos)
+                    self.graph.edges[edge]["length"] = length
 
 
 
