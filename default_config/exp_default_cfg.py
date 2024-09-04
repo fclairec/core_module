@@ -51,6 +51,7 @@ _C.built.voxel_size = 0.01
 _C.built.d_max = 0.02
 _C.built.waypoints = "general.txt"
 _C.built.simulation = CN()
+_C.built.simulation.overwrite_existing = False
 _C.built.simulation.test = False
 _C.built.simulation.accuracy = 0.005
 _C.built.simulation.output_legs = False
