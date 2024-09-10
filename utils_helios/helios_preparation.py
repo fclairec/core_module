@@ -1,3 +1,5 @@
+import copy
+
 import pandas as pd
 from archive.spatial_instance_queries import get_containment_ray_trace
 from core_module.graph.DesignGraph import DesignGraph
@@ -43,8 +45,9 @@ def get_space_graph(cfg, instance_collection: InstanceCollection):
 
     SpaceGraph.assemble_graph_files(cfg, "element", selected_guid_ints, False, False)
 
-    enrichment_feature_dict.pop("edge_length", None)
-    SpaceGraph.enrich_graph(cfg.pem_file, enrichment_feature_dict, cfg.node_color_legend_file)
+    enrichment_f = copy.deepcopy(enrichment_feature_dict)
+    enrichment_f.pop("edge_length", None)
+    SpaceGraph.enrich_graph(cfg.pem_file, enrichment_f, cfg.node_color_legend_file)
     SpaceGraph.graph_to_pkl(cfg.space_graph)
     # plot a networkx graph
     SpaceGraph.plot_graph("space graph", cfg.space_graph_viz)

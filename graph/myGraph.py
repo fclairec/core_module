@@ -58,7 +58,7 @@ class MyGraph():
                     start_pos = np.array([self.graph.nodes[edge[0]]["cp_x"], self.graph.nodes[edge[0]]["cp_y"], self.graph.nodes[edge[0]]["cp_z"]])
                     end_pos = np.array([self.graph.nodes[edge[1]]["cp_x"], self.graph.nodes[edge[1]]["cp_y"], self.graph.nodes[edge[1]]["cp_z"]])
                     length = np.linalg.norm(start_pos - end_pos)
-                    self.graph.edges[edge]["length"] = length
+                    self.graph.edges[edge]["width"] = length
 
 
 
@@ -119,7 +119,7 @@ class MyGraph():
 
         print(f"Graph verified with features {node_attrbs}")
 
-    def graph2viz(self, node_attrs2scalar: list, filename: Path) -> None:
+    def  graph2viz(self, node_attrs2scalar: list, filename: Path) -> None:
         self.graph2ply(node_attrs2scalar, filename)
         filename_new = filename.with_suffix('.obj')
         self.graph2cc_format(filename_new)
