@@ -17,7 +17,7 @@ def helios_prep_model(cfg):
     disciplines.remove("Rest")
     parsed_ifc_classes = get_ifc_class_parsing_details(disciplines)
     parsed_ifc_classes_names = [x[0] for x in parsed_ifc_classes]
-    model = SurfaceModel(Path(cfg.waypoint_selection_file), type_s="b")
+    model = SurfaceModel(Path(cfg.waypoint_selection_file), "b", "all")
     model.ifcconvert(cfg.ifc_file_path, parsed_ifc_classes_names, cfg.ceiling_elements_guid)
     model.load_surface_file()
     model.modify_surface_model(cfg.pem_file, ['viz'])
