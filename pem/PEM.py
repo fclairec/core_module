@@ -24,6 +24,7 @@ class PEM:
         self.guid_txt = []
         self.pcd = []
         self.match_id = []
+        self.ifc_properties = []
 
     def update(self, **kwargs):
         self.check_minimum_attr(kwargs)

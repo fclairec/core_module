@@ -17,14 +17,24 @@ _C.building_project = "A"
 
 _C.design = CN()
 _C.design.setup_name = "setup_default"
-_C.design.ifc_file = "setup_default"
+_C.design.ifc_file_type = "single" # multiple if one file per discipline
+
+_C.design.ifc_file = CN()
+_C.design.ifc_file.ALL = "setup_default"
+_C.design.ifc_file.ARC = "setup_default"
+_C.design.ifc_file.VTL = "setup_default"
+_C.design.ifc_file.PLB = "setup_default"
+_C.design.ifc_file.EL = "setup_default"
+_C.design.ifc_file.FUR = "setup_default"
+_C.design.ifc_file.Rest = "setup_default"
+
 _C.design.disciplines = []
 _C.design.default_spanning_types = ["Wall", "Ceiling", 'Floor', 'Column']
 
 _C.design.d_tol = CN()
 _C.design.d_tol.elements = 0.2
-_C.design.d_tol.face = 0.02 # 2cm
-_C.design.d_tol.merges = 0.05 # 2cm
+_C.design.d_tol.face = 0.02  # 2cm
+_C.design.d_tol.merges = 0.05  # 2cm
 _C.design.n_tol = 0.9
 
 _C.design.sampling_density = 400
@@ -35,7 +45,19 @@ _C.design.voxel_size = 0.1
 
 _C.built = CN()
 _C.built.setup_name = "setup_default"
-_C.built.ifc_file = "setup_default"
+
+_C.built.ifc_file_type = "single" # multiple if one file per discipline
+
+_C.built.ifc_file = CN()
+_C.built.ifc_file.ALL = "setup_default"
+_C.built.ifc_file.ARC = "setup_default"
+_C.built.ifc_file.VTL = "setup_default"
+_C.built.ifc_file.PLB = "setup_default"
+_C.built.ifc_file.EL = "setup_default"
+_C.built.ifc_file.FUR = "setup_default"
+
+_C.built.ifc_file.Rest = "setup_default"
+
 _C.built.real = False
 _C.built.point_cloud = "setup_default"
 _C.built.disciplines = []
@@ -51,6 +73,7 @@ _C.built.voxel_size = 0.01
 _C.built.d_max = 0.02
 _C.built.waypoints = "general.txt"
 _C.built.simulation = CN()
+_C.built.simulation.overwrite_existing = False
 _C.built.simulation.test = False
 _C.built.simulation.accuracy = 0.005
 _C.built.simulation.output_legs = False
@@ -90,19 +113,16 @@ def update_exp_config(cfg_t, cfg_args, ensure_dir=True):
     ifcMap = prime_service["ifcMap"]
     modes = ["design", "built"]
     # set up d_1, d_2, b_1, b_2 is for all buildings
-    for building_project in prime_service["building_projects"]:
-        for mode in modes:
-            setups = copy.deepcopy(prime_service[mode])
-            for setup_id, params in setups.items():
-                params = copy.deepcopy(params)
-                params["ifc_file"] = ifcMap[building_project][mode[0]]
-                params["disciplines"] = unlock_d(params["disciplines"])
-                setup_list = dict_to_flat_list(params, mode)
-                setup_list = setup_list + ["building_project", building_project]
-                cfg = copy.deepcopy(cfg_t)
-                cfg.defrost()
-                cfg.merge_from_list(setup_list)
-                list_cfgs.append(cfg)
+    for mode in modes:
+        setups = copy.deepcopy(prime_service[mode])
+        for setup_id, params in setups.items():
+            params = copy.deepcopy(params)
+            params["disciplines"] = unlock_d(params["disciplines"])
+            setup_list = dict_to_flat_list(params, mode)
+            cfg = copy.deepcopy(cfg_t)
+            cfg.defrost()
+            cfg.merge_from_list(setup_list)
+            list_cfgs.append(cfg)
 
     return list_cfgs
 

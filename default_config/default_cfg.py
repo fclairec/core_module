@@ -14,14 +14,30 @@ def setup_paths(_C, ensure_paths=True):
     _C.log_dir = osp.join(_C.root_dir, 'data_log')
 
     _C.design.root_dir = osp.join(_C.root_dir, _C.design.setup_name)
-    _C.design.ifc_file_path = osp.join(_C.design.root_dir, _C.design.ifc_file)
+    _C.design.ifc_file_path = CN()
+    _C.design.ifc_file_path.ALL = osp.join(_C.design.root_dir, _C.design.ifc_file.ALL)
+    _C.design.ifc_file_path.ARC = osp.join(_C.design.root_dir, _C.design.ifc_file.ARC)
+    _C.design.ifc_file_path.VTL = osp.join(_C.design.root_dir, _C.design.ifc_file.VTL)
+    _C.design.ifc_file_path.PLB = osp.join(_C.design.root_dir, _C.design.ifc_file.PLB)
+    _C.design.ifc_file_path.EL = osp.join(_C.design.root_dir, _C.design.ifc_file.EL)
+    _C.design.ifc_file_path.FUR = osp.join(_C.design.root_dir, _C.design.ifc_file.FUR)
+    _C.design.ifc_file_path.Rest = osp.join(_C.design.root_dir, _C.design.ifc_file.Rest)
+
     _C.design.default_spanning_types = ["Wall", "Ceiling", 'Floor', 'Column']
 
     _C.design.final_adjacency_file = osp.join(_C.design.root_dir, 'd_adjacencies_final.csv')
 
 
     _C.built.root_dir = osp.join(_C.root_dir, _C.built.setup_name)
-    _C.built.ifc_file_path = osp.join(_C.built.root_dir, _C.built.ifc_file)
+    _C.built.ifc_file_path = CN()
+    _C.built.ifc_file_path.ALL = osp.join(_C.built.root_dir, _C.built.ifc_file.ALL)
+    _C.built.ifc_file_path.ARC = osp.join(_C.built.root_dir, _C.built.ifc_file.ARC)
+    _C.built.ifc_file_path.VTL = osp.join(_C.built.root_dir, _C.built.ifc_file.VTL)
+    _C.built.ifc_file_path.PLB = osp.join(_C.built.root_dir, _C.built.ifc_file.PLB)
+    _C.built.ifc_file_path.EL = osp.join(_C.built.root_dir, _C.built.ifc_file.EL)
+    _C.built.ifc_file_path.FUR = osp.join(_C.built.root_dir, _C.built.ifc_file.FUR)
+    _C.built.ifc_file_path.Rest = osp.join(_C.built.root_dir, _C.built.ifc_file.Rest)
+
 
 
     # extract_data_from_ifc
@@ -30,7 +46,14 @@ def setup_paths(_C, ensure_paths=True):
     _C.design.containment_file = osp.join(_C.design.root_dir, 'd_containments.csv')
     _C.design.features_file = osp.join(_C.design.root_dir, 'd_features.csv')
     _C.design.pem_file = osp.join(_C.design.root_dir, 'd_project_element_map.csv')
-    _C.design.surface_file_path = osp.join(_C.design.root_dir, 'd_surface.obj')
+    _C.design.surface_file_path = CN()
+    _C.design.surface_file_path.ALL = osp.join(_C.design.root_dir, 'd_surface.obj')
+    _C.design.surface_file_path.ARC = osp.join(_C.design.root_dir, 'd_surface_arc.obj')
+    _C.design.surface_file_path.VTL = osp.join(_C.design.root_dir, 'd_surface_vtl.obj')
+    _C.design.surface_file_path.PLB = osp.join(_C.design.root_dir, 'd_surface_plb.obj')
+    _C.design.surface_file_path.EL = osp.join(_C.design.root_dir, 'd_surface_el.obj')
+    _C.design.surface_file_path.FUR = osp.join(_C.design.root_dir, 'd_surface_fur.obj')
+    _C.design.surface_file_path.Rest = osp.join(_C.design.root_dir, 'd_surface_rest.obj')
     _C.design.instances_pickle = osp.join(_C.design.root_dir, 'd_instances.pkl')
     _C.design.shapes_pkl = osp.join(_C.design.root_dir, 'd_geometries.pkl')
     _C.design.sampled_pcd_filename_unprocessed = osp.join(_C.design.root_dir, 'd_sampled_pcd.las')
@@ -63,7 +86,16 @@ def setup_paths(_C, ensure_paths=True):
     _C.built.waypoint_selection_file = osp.join(_C.built.root_dir, 'b_waypoint_selection.obj')
     _C.built.instances_pickle = osp.join(_C.built.root_dir, 'b_instances.pkl')
     _C.built.shapes_pkl = osp.join(_C.built.root_dir, 'b_geometries.pkl')
-    _C.built.helios_simulation_file = osp.join(_C.built.root_dir,'b_simulation_file.obj')
+    _C.built.helios_simulation_file = CN()
+    _C.built.helios_simulation_file.ALL = osp.join(_C.built.root_dir, 'b_simulation_file.obj')
+    _C.built.helios_simulation_file.ARC = osp.join(_C.built.root_dir, 'b_simulation_file_arc.obj')
+    _C.built.helios_simulation_file.VTL = osp.join(_C.built.root_dir, 'b_simulation_file_vtl.obj')
+    _C.built.helios_simulation_file.PLB = osp.join(_C.built.root_dir, 'b_simulation_file_plb.obj')
+    _C.built.helios_simulation_file.EL = osp.join(_C.built.root_dir, 'b_simulation_file_el.obj')
+    _C.built.helios_simulation_file.FUR = osp.join(_C.built.root_dir, 'b_simulation_file_fur.obj')
+    _C.built.helios_simulation_file.Rest = osp.join(_C.built.root_dir, 'b_simulation_file_rest.obj')
+
+
     _C.built.instances_filename = osp.join(_C.built.root_dir, 'b_faces.obj')
     _C.built.adjacency_file = osp.join(_C.built.root_dir, 'b_adjacencies.csv')
     _C.built.containment_file = osp.join(_C.built.root_dir, 'b_containments.csv')
@@ -139,13 +171,12 @@ def create_paths(cfg):
     else:
         common.ensure_dir(cfg_s.root_dir)
         # copy ifc
-        d_ifc = osp.join(cfg.ifc_pool, cfg_s.ifc_file)
-        shutil.copy(d_ifc, cfg_s.ifc_file_path)
-
-        d_ifc_spaces = Path(d_ifc).parent / (Path(d_ifc).stem + "_spaces.ifc")
-        if d_ifc_spaces.exists():
-            dst_spaces_file = Path(cfg_s.ifc_file_path).parent / (Path(cfg_s.ifc_file_path).stem + "_spaces.ifc")
-            shutil.copy(d_ifc_spaces, dst_spaces_file)
+        for ifc in cfg_s.ifc_file:
+            file_name = getattr(cfg_s.ifc_file, ifc)
+            if file_name == "setup_default":
+                continue
+            d_ifc = osp.join(cfg.ifc_pool, file_name)
+            shutil.copy(d_ifc, getattr(cfg_s.ifc_file_path, ifc))
 
 
         if mode == "built":

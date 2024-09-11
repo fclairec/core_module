@@ -158,10 +158,13 @@ class PCD:
         # Assign instance labels (s) and type_int (s1) and discipline (s2)
         las.add_extra_dim(laspy.ExtraBytesParams(name="instance", type=np.int32))
         las.add_extra_dim(laspy.ExtraBytesParams(name="type", type=np.int32))
-        las.add_extra_dim(laspy.ExtraBytesParams(name="discipline", type=np.int32))
+
         las.instance = self.instance_labels[:, 0]
         las.type = self.type_int
-        las.discipline = self.discipline_int
+
+        if self.discipline_int is not None:
+            las.add_extra_dim(laspy.ExtraBytesParams(name="discipline", type=np.int32))
+            las.discipline = self.discipline_int
 
 
         # Write the LAS file

@@ -1,3 +1,5 @@
+import copy
+
 import pandas as pd
 from archive.spatial_instance_queries import get_containment_ray_trace
 from core_module.graph.DesignGraph import DesignGraph
@@ -15,7 +17,7 @@ def helios_prep_model(cfg):
     disciplines.remove("Rest")
     parsed_ifc_classes = get_ifc_class_parsing_details(disciplines)
     parsed_ifc_classes_names = [x[0] for x in parsed_ifc_classes]
-    model = SurfaceModel(Path(cfg.waypoint_selection_file), type_s="b")
+    model = SurfaceModel(Path(cfg.waypoint_selection_file), "b", "all")
     model.ifcconvert(cfg.ifc_file_path, parsed_ifc_classes_names, cfg.ceiling_elements_guid)
     model.load_surface_file()
     model.modify_surface_model(cfg.pem_file, ['viz'])
@@ -43,8 +45,9 @@ def get_space_graph(cfg, instance_collection: InstanceCollection):
 
     SpaceGraph.assemble_graph_files(cfg, "element", selected_guid_ints, False, False)
 
-    enrichment_feature_dict.pop("edge_length", None)
-    SpaceGraph.enrich_graph(cfg.pem_file, enrichment_feature_dict, cfg.node_color_legend_file)
+    enrichment_f = copy.deepcopy(enrichment_feature_dict)
+    enrichment_f.pop("edge_length", None)
+    SpaceGraph.enrich_graph(cfg.pem_file, enrichment_f, cfg.node_color_legend_file)
     SpaceGraph.graph_to_pkl(cfg.space_graph)
     # plot a networkx graph
     SpaceGraph.plot_graph("space graph", cfg.space_graph_viz)
