@@ -89,6 +89,13 @@ class PEM:
             all_guids += lst_guids
         return all_guids
 
+    def get_instance_guids_by_discipline(self, disciplines):
+        all_guids = []
+        for d in disciplines:
+            guids_ = self.get_instance_guids_by_attribute_condition("discipline_txt", d)
+            all_guids += guids_
+        return all_guids
+
     def get_instance_guids_excluding_type(self, instance_types):
         instance_guid2type = {self.guid_int[i]: self.instance_type[i] for i in range(len(self.guid_int)) if self.instance_type[i] not in instance_types}
         type2instance_guid = invert_dict_list(instance_guid2type)
@@ -141,6 +148,33 @@ class PEM:
             elif len(self.guid_int) != len(self.__dict__[key]):
                 self.__dict__[key] += [None] * (len(self.guid_int) - len(self.__dict__[key]))
         a=0
+
+    def drop_rewritten_instances(self):
+        rewritten_guids = self.get_instance_guids_by_type("rewritten")
+        for guid in rewritten_guids:
+            pos = self.guid_int.index(guid)
+            for key in self.__dict__.keys():
+                if key in ["mode", "inst_types_all", "pc_type"]:
+                    continue
+                attr = getattr(self, key)
+                attr.pop(pos)
+                setattr(self, key, attr)
+
+
+    def drop_disciplines(self, disc):
+        all_guids = []
+        for d in disc:
+            guids_ = self.get_instance_guids_by_attribute_condition("discipline_txt", d)
+            all_guids += guids_
+        for guid in all_guids:
+            pos = self.guid_int.index(guid)
+            for key in self.__dict__.keys():
+                if key in ["mode", "inst_types_all", "pc_type"]:
+                    continue
+                attr = getattr(self, key)
+                attr.pop(pos)
+                setattr(self, key, attr)
+
 
     def __str__(self):
         return f"ProjectElementMap)"
