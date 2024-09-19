@@ -120,27 +120,6 @@ epsilon_threshold = {
     'Rest': 0.5,
 }
 
-""" 'ControlElement': ['IfcActuator', 'IfcController', 'IfcSensor', 'IfcUnitaryControlElement', 'IfcUnitaryEquipment'],
- 'HVACComponent': ['IfcAirTerminal', 'IfcDuctFitting', 'IfcDuctSegment', 'IfcDuctSilencer', 'IfcSpaceHeater'],
- 'SafetyDevice': ['IfcAlarm', 'IfcFireSuppressionTerminal', 'IfcProtectiveDevice'],
- 'Cabling': ['IfcCableCarrierFitting', 'IfcCableCarrierSegment', 'IfcCableFitting', 'IfcJunctionBox'],
- 'HeatingDevice': ['IfcCoil'],
- 'FlowControl': ['IfcDamper', 'IfcValve'],
- 'Accessory': ['IfcDiscreteAccessory'],
- 'ElectricalDevice': ['IfcElectricDistributionBoard', 'IfcElectricTimeControl', 'IfcOutlet', 'IfcSwitchingDevice'],
- 'StructuralElement': ['IfcFooting'],
- 'Lighting': ['IfcLightFixture'],
- 'Plumbing': ['IfcSanitaryTerminal', 'IfcWasteTerminal'],
- 'BuildingComponent': ['IfcBuilding', 'IfcBuildingStorey', 'IfcSite']"""
-
-
-
-
-
-
-
-
-
 
 
 def get_int2discipline(ifc_parsing_dict):

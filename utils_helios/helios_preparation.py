@@ -1,24 +1,16 @@
-import pandas as pd
-from archive.spatial_instance_queries import get_containment_ray_trace
-from core_module.graph.DesignGraph import DesignGraph
-from core_module.default_config.config import enrichment_feature_dict, transition_element_types
-from pathlib import Path
-from visualisation.SurfaceModel import SurfaceModel
-from default_config.ifc_parsing_config import get_ifc_class_parsing_details
-from instance_classes.InstanceCollection import InstanceCollection
-from core_module.pem.IfcPEM import IfcPEM
+import copy
 
-def helios_prep_model(cfg):
-    #### Generate second surface model to easily select waypoints in cloud compare - requirement: guids of ceiling elements)
-    print("preparing surface model for waypoint selection in cloud compare")
-    disciplines = cfg.disciplines.copy()
-    disciplines.remove("Rest")
-    parsed_ifc_classes = get_ifc_class_parsing_details(disciplines)
-    parsed_ifc_classes_names = [x[0] for x in parsed_ifc_classes]
-    model = SurfaceModel(Path(cfg.waypoint_selection_file), type_s="b")
-    model.ifcconvert(cfg.ifc_file_path, parsed_ifc_classes_names, cfg.ceiling_elements_guid)
-    model.load_surface_file()
-    model.modify_surface_model(cfg.pem_file, ['viz'])
+import pandas as pd
+from src.core_module.graph.DesignGraph import DesignGraph
+from src.core_module.default.match_config import enrichment_feature_dict, transition_element_types
+from pathlib import Path
+from src.visualisation.SurfaceModel import SurfaceModel
+from src.ifc_module.ifc_parsing_utils import get_ifc_class_parsing_details
+from src.instance_classes.InstanceCollection import InstanceCollection
+from src.instance_classes.BuildingElement import BuildingElement
+from src.core_module.pem.IfcPEM import IfcPEM
+from typing import List
+import numpy as np
 
 
 def helios_waypoint_assignment(cfg, instance_collection: InstanceCollection):
@@ -30,7 +22,25 @@ def helios_waypoint_assignment(cfg, instance_collection: InstanceCollection):
     waypoints.to_csv(cfg.waypoint_file, index=False, header=True)
 
 
+def get_containment_ray_trace(potential_host_instances: List[BuildingElement],
+                              potential_guest_instances: pd.DataFrame) -> np.ndarray:
+    """ takes a list of building instances, and a dataframe of points and checks for containment with the trimesh ray trace method
+    :param potential_host_instances: list of building instances that are potentially hosts
+    :param potential_guest_instances: dataframe of points that are potentially guests in """
+    host_mesh_list = {}
+    for instance in potential_host_instances:
+        i = instance.guid_int
+        host_mesh_list[i] = instance.triangulate()
+    waypoints = potential_guest_instances[["x", "y", "z"]] + np.array([0, 0, 0.1])
+    host_per_point = np.zeros(waypoints.shape[0], dtype=int)
+    for id, mesh in host_mesh_list.items():
+        result = mesh.ray.contains_points(waypoints)
+        host_per_point[result] = id
+    return host_per_point
+
+
 def get_space_graph(cfg, instance_collection: InstanceCollection):
+    """ assembles a simple space graph with transition elements."""
     print("assembling space graph with transition elements")
     pem = IfcPEM()
     pem.load_pem(cfg.pem_file)
@@ -43,8 +53,9 @@ def get_space_graph(cfg, instance_collection: InstanceCollection):
 
     SpaceGraph.assemble_graph_files(cfg, "element", selected_guid_ints, False, False)
 
-    enrichment_feature_dict.pop("edge_length", None)
-    SpaceGraph.enrich_graph(cfg.pem_file, enrichment_feature_dict, cfg.node_color_legend_file)
+    enrichment_f = copy.deepcopy(enrichment_feature_dict)
+    enrichment_f.pop("edge_length", None)
+    SpaceGraph.enrich_graph(cfg.pem_file, enrichment_f, cfg.node_color_legend_file)
     SpaceGraph.graph_to_pkl(cfg.space_graph)
     # plot a networkx graph
     SpaceGraph.plot_graph("space graph", cfg.space_graph_viz)
