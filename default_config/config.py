@@ -1,153 +1,145 @@
-feature_tasks = ["centroid", "pca_and_extents"]
-mre_element_types = ["Wall", "Ceiling", 'Floor', 'Column']  # "Floor", "Ceiling",
-transition_element_types = ['Door', 'Window', 'Stair']
-
-
-internali2internalt = {
-    1: 'Wall',
-    2: 'Floor',
-    3: 'Ceiling',
-    4: 'Door',
-    5: 'Window',
-    6: 'Column',
-    7: 'Stair',
-    8: 'Pipe',
-    9: 'Sink',
-    10: 'Toilet',
-    11: 'Sprinkler',
-    12: 'Tank',
-    13: 'Duct',
-    14: 'Air terminal',
-    15: 'Light',
-    16: 'Alarm',
-    17: 'Sensor',
-    18: 'Outlet',
-    19: 'Switch',
-    20: 'Table',
-    21: 'Chair',
-    22: 'Bookshelf',
-    23: 'Appliance',
-    24: 'Space',
-    25: 'SpaceHeater',
-    26: 'Proxy',
-    999: 'other'
-}
-
-internali2internalt_discipline = {
-    1: 'ARC',
-    2: 'PLB',
-    3: 'VTL',
-    4: 'EL',
-    5: 'FUR',
-    6: 'Rest',
-    999: 'other'
-}
+import os.path as osp
+from yacs.config import CfgNode as CN
+from src.core_module.utils_general import common
+import yaml
+import copy
 
 
 
-discipline_wise_classes = {
-    "ARC": ["Wall", "Floor", "Ceiling", "Door", "Window", "Column", "Stair"],
-    "PLB": ["Pipe", "Sink", "Toilet", "Sprinkler", "Tank"],
-    "VTL": ["Duct", "Air terminal"],
-    "EL": ["Light", "Alarm", "Sensor", "Outlet", "Switch"],
-    "FUR": ["Table", "Chair", "Bookshelf", "Appliance"],
-    "Rest": ["Space"]
-}
+_C = CN()
+_C.seed = 42
 
-# geometric features are calculated from a cluster of points and become attributes of the spg. The following dictionary translates the
-# geometric feature names from the spg to the myGraph format
-sp_feature_translation_dict = {
-    "centroid": {"SPG": ["sp_centroids"], "myGraph": ["cp_x", "cp_y", "cp_z"]},
-    "pca": {"SPG": ["pca1", "pca2", "pca3"],
-            "myGraph": ["pca1x", "pca1y", "pca1z", "pca2x", "pca2y", "pca2z", "pca3x", "pca3y", "pca3z"]},
-    "extents": {"SPG": ["sp_extents"], "myGraph": ["extent_pca1", "extent_pca2", "extent_pca3"]},
-    "normal": {"SPG": ["sp_normals"], "myGraph": ["normal_x", "normal_y", "normal_z"]},
-}
+_C.root_root_dir = '/home/appuser/input_data/data'
+_C.ifc_pool = '/home/appuser/input_data/ifc_models'
+_C.waypoint_pool = '/home/appuser/input_data/waypoint_files'
+_C.real_point_cloud_pool = '/home/appuser/input_data/real_point_clouds'
+_C.building_project = "A"
+_C.mode = "d"
 
-enrichment_feature_dict = {
-    "label": "type_int",
-    "color": "color",
-    "discipline": "discipline_int",
-    "room": "room_id",
-    "edge_length": "edge_length",
-}
 
-int2color = {
-    1: [112, 48, 160, 1.0],
-    2: [0, 0, 255, 1.0],
-    3: [124, 130, 0, 1.0],
-    4: [255, 192, 0, 1.0],
-    5: [124, 255, 0, 1.0],
-    6: [197, 90, 17, 1.0],
-    7: [255, 128, 0, 1.0],
-    8: [255, 2, 0, 1.0],
-    9: [0, 255, 255, 1.0],
-    10: [0, 255, 50, 1.0],
-    11: [0, 50, 255, 1.0],
-    12: [255, 0, 255, 1.0],
-    13: [255, 0, 50, 1.0],
-    14: [255, 255, 0, 1.0],
-    15: [0, 255, 0, 1.0],
-    16: [200, 193, 209, 1.0],
-    17: [44, 160, 21, 1.0],
-    18: [158, 124, 137, 1.0],
-    19: [134, 114, 157, 1.0],
-    20: [87, 240, 51, 1.0],
-    21: [13, 63, 34, 1.0],
-    22: [99, 193, 98, 1.0],
-    23: [39, 120, 164, 1.0],
-    24: [200, 162, 89, 1.0],
-    25: [121, 107, 0, 1.0],
-    26: [0, 0, 0, 1.0],
-    999: [128, 60, 21, 1.0]
-}
+_C.design = CN()
+_C.design.setup_name = "setup_default"
+_C.design.ifc_file_type = "single" # multiple if one file per discipline
 
-discipline_colors = {
-    'ARC': [0, 0, 255, 1.0],
-    'PLB': [255, 0, 0, 1.0],
-    'VTL': [0, 255, 0, 1.0],
-    'EL': [255, 255, 0, 1.0],
-    'FUR': [0, 255, 255, 1.0],
-    'Rest': [255, 0, 255, 1.0],
-}
+_C.design.ifc_file = CN()
+_C.design.ifc_file.ALL = "setup_default"
+_C.design.ifc_file.ARC = "setup_default"
+_C.design.ifc_file.VTL = "setup_default"
+_C.design.ifc_file.PLB = "setup_default"
+_C.design.ifc_file.EL = "setup_default"
+_C.design.ifc_file.FUR = "setup_default"
+_C.design.ifc_file.Rest = "setup_default"
 
-epsilon_threshold = {
-    'ARC': 0.08,
-    'PLB': 0.2,
-    'VTL': 0.5,
-    'EL': 0.5,
-    'FUR': 0.7,
-    'Rest': 0.5,
-}
+_C.design.disciplines = []
 
-""" 'ControlElement': ['IfcActuator', 'IfcController', 'IfcSensor', 'IfcUnitaryControlElement', 'IfcUnitaryEquipment'],
- 'HVACComponent': ['IfcAirTerminal', 'IfcDuctFitting', 'IfcDuctSegment', 'IfcDuctSilencer', 'IfcSpaceHeater'],
- 'SafetyDevice': ['IfcAlarm', 'IfcFireSuppressionTerminal', 'IfcProtectiveDevice'],
- 'Cabling': ['IfcCableCarrierFitting', 'IfcCableCarrierSegment', 'IfcCableFitting', 'IfcJunctionBox'],
- 'HeatingDevice': ['IfcCoil'],
- 'FlowControl': ['IfcDamper', 'IfcValve'],
- 'Accessory': ['IfcDiscreteAccessory'],
- 'ElectricalDevice': ['IfcElectricDistributionBoard', 'IfcElectricTimeControl', 'IfcOutlet', 'IfcSwitchingDevice'],
- 'StructuralElement': ['IfcFooting'],
- 'Lighting': ['IfcLightFixture'],
- 'Plumbing': ['IfcSanitaryTerminal', 'IfcWasteTerminal'],
- 'BuildingComponent': ['IfcBuilding', 'IfcBuildingStorey', 'IfcSite']"""
+_C.design.d_tol = CN()
+_C.design.d_tol.elements = 0.2
+_C.design.d_tol.face = 0.02  # 2cm
+_C.design.d_tol.merges = 0.05  # 2cm
+_C.design.n_tol = 0.9
+
+_C.design.sampling_density = 400
+_C.design.voxel_size = 0.1
 
 
 
 
+_C.built = CN()
+_C.built.setup_name = "setup_default"
+
+_C.built.ifc_file_type = "single" # multiple if one file per discipline
+
+_C.built.ifc_file = CN()
+_C.built.ifc_file.ALL = "setup_default"
+_C.built.ifc_file.ARC = "setup_default"
+_C.built.ifc_file.VTL = "setup_default"
+_C.built.ifc_file.PLB = "setup_default"
+_C.built.ifc_file.EL = "setup_default"
+_C.built.ifc_file.FUR = "setup_default"
+_C.built.ifc_file.Rest = "setup_default"
+
+_C.built.disciplines = []
+
+_C.built.d_tol = CN()
+_C.built.d_tol.elements = 0.2
+_C.built.d_tol.face = 0.02
+_C.built.d_tol.merges = 0.02
+_C.built.n_tol = 0.9
+
+_C.built.real = False
+_C.built.point_cloud = "setup_default"
+
+
+_C.built.waypoints = "general.txt"
+_C.built.simulation = CN()
+_C.built.simulation.overwrite_existing = False
+_C.built.simulation.test = False
+_C.built.simulation.accuracy = 0.005
+_C.built.simulation.output_legs = False
+
+_C.built.voxel_size = 0.01
+_C.built.d_max = 0.02
+
+_C.built.subsets = CN()
+_C.built.subsets.split_type = ["wp"]
+_C.built.subsets.room_nb = [1]
+_C.built.subsets.rotations = [[0, 0, 0]]
+_C.built.subsets.translations = [[0, 0, 0]]
+
+_C.built.ceiling_elements_guid = ["3kOisf8iHDQ9b60gokQk6c", "2NoCROD1P8KxbahrIQpFr7", "3L2L5EHTz56ef40SrZlEr6",
+                        "3L2L5EHTz56ef40SrZlEr5", "3BmeJtEDj3AQO77Os2w6ZR", "0P7YxrKvv9pAandyAj8CEC",
+                        "08Kju84ofEuAMc6WrE1A36"]
 
 
 
 
+def dict_to_flat_list(d, mode):
+    flat_list = []
+    for key, value in d.items():
+        if isinstance(value, dict):
+            sub_list = dict_to_flat_list(value, mode+"."+key)
+            flat_list = flat_list + sub_list
+        else:
+            flat_list.append(mode+"."+key)
+            flat_list.append(value)
+    return flat_list
+
+def update_exp_config(cfg_t, cfg_args, ensure_dir=True):
+
+    # read yaml file normally
+
+    import yaml
+    with open(cfg_args, 'r') as file:
+        prime_service = yaml.safe_load(file)
+    list_cfgs = []
+    modes = ["design", "built"]
+    # set up d_1, d_2, b_1, b_2 is for all buildings
+    for mode in modes:
+        setups = copy.deepcopy(prime_service[mode])
+        for setup_id, params in setups.items():
+            params = copy.deepcopy(params)
+            params["disciplines"] = unlock_d(params["disciplines"])
+            setup_list = dict_to_flat_list(params, mode)
+            setup_list = setup_list + ["mode", mode]
+            cfg = copy.deepcopy(cfg_t)
+            cfg.defrost()
+            cfg.merge_from_list(setup_list)
+            list_cfgs.append(cfg)
+
+    return list_cfgs
 
 
 
-def get_int2discipline(ifc_parsing_dict):
-    out = {}
-    for expert_model_name, int2ifc_map in ifc_parsing_dict.items():
-        for internal_class, ifc_classes in int2ifc_map.items():
-            out[internal_class] = expert_model_name
-
-    return out
-
+def unlock_d(d_short):
+    if d_short[0] == "ARC":
+        return d_short
+    d_long = {
+        "A": "ARC",
+        "V": "VTL",
+        "E": "EL",
+        "P": "PLB",
+        "F": "FUR",
+        "R": "Rest"
+    }
+    d_long_list = [d_long[d] for d in d_short]
+    return d_long_list
