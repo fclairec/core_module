@@ -1,6 +1,5 @@
 import os.path as osp
 from yacs.config import CfgNode as CN
-from src.core_module.utils_general import common
 import yaml
 import copy
 
@@ -66,7 +65,7 @@ _C.built.d_tol.face = 0.02
 _C.built.d_tol.merges = 0.02
 _C.built.n_tol = 0.9
 
-_C.built.real = False
+_C.built.pcd_type = "helios"
 _C.built.point_cloud = "setup_default"
 
 

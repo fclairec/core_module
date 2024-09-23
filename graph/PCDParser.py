@@ -41,13 +41,10 @@ class PCD:
         # search for the module of name pcd_formats
         self.pcd_files = pcd_paths
 
-        module_name = "pcd_formats." + pcd_format
-        try:
-            module = importlib.import_module(module_name)
-        except ImportError:
-            module = 0
-            print(f"No module named '{module_name}' available.")
-
+        if pcd_format != "helios":
+            module = importlib.import_module("pcd_formats.generic")
+        else:
+            module = importlib.import_module("pcd_formats.helios")
 
         for pcd_file in self.pcd_files:
             points, instance_labels = module.load(pcd_file)
@@ -67,6 +64,7 @@ class PCD:
             self._update_point_indices_per_instance(np.unique(instance_labels))
 
     def _update_point_indices_per_instance(self, unique_labels):
+        self.point_indices_per_instance = {}
         for label in unique_labels:
             self.point_indices_per_instance[label] = np.where(self.instance_labels == label)[0]
 
@@ -103,6 +101,7 @@ class PCD:
         o3_pcd = to_open3d(self.points, self.instance_labels)
         clean_o3_pcd, _ = o3_pcd.remove_statistical_outlier(nb_neighbors=20, std_ratio=2)
         self.points, self.instance_labels, self.colors = from_open3d(clean_o3_pcd)
+        self._update_point_indices_per_instance(np.unique(self.instance_labels))
         self.preprocessing_steps_performed.append('cleaned')
 
     def transform(self, transformation_matrix):
@@ -122,6 +121,7 @@ class PCD:
         self.points, self.instance_labels, self.colors = from_open3d(down_o3_pcd)
         self.preprocessing_steps_performed.append(f'downsampled_{voxel_size}')
         self._update_point_indices_per_instance(np.unique(self.instance_labels))
+        a=0
 
     def add_scalars_from_pem(self, pem_file, values):
         pem = PcPEM(self.pc_type)
