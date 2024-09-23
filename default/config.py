@@ -65,7 +65,7 @@ _C.built.d_tol.face = 0.02
 _C.built.d_tol.merges = 0.02
 _C.built.n_tol = 0.9
 
-_C.built.real = False
+_C.built.pcd_type = "helios"
 _C.built.point_cloud = "setup_default"
 
 
@@ -119,7 +119,7 @@ def update_exp_config(cfg_t, cfg_args, ensure_dir=True):
             params = copy.deepcopy(params)
             params["disciplines"] = unlock_d(params["disciplines"])
             setup_list = dict_to_flat_list(params, mode)
-            setup_list = setup_list + ["mode", mode]
+            setup_list = setup_list + ["mode", mode] + ["building_project", prime_service["building_projects"][0]]
             cfg = copy.deepcopy(cfg_t)
             cfg.defrost()
             cfg.merge_from_list(setup_list)

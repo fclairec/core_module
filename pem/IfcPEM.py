@@ -1,7 +1,7 @@
 from core_module.pem.PEM import PEM
 import ast
 import numpy as np
-from core_module.default_config.config import transition_element_types
+from core_module.default.match_config import transition_element_types
 from core_module.utils_general.general_functions import invert_dict_list
 class IfcPEM(PEM):
     def __init__(self):

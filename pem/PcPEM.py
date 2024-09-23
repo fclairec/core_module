@@ -3,7 +3,7 @@ import warnings
 
 class PcPEM(PEM):
     def __init__(self, pcd_type):
-        if pcd_type == "bim_sampled":
+        if pcd_type == "bim_sampled" or pcd_type == "bim":
             mode = "d"
         elif pcd_type == "helios":
             mode = "b"

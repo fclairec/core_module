@@ -1,14 +1,11 @@
 import copy
 
 import pandas as pd
-from src.core_module.graph.DesignGraph import DesignGraph
-from src.core_module.default.match_config import enrichment_feature_dict, transition_element_types
-from pathlib import Path
-from src.visualisation.SurfaceModel import SurfaceModel
-from src.ifc_module.ifc_parsing_utils import get_ifc_class_parsing_details
-from src.instance_classes.InstanceCollection import InstanceCollection
-from src.instance_classes.BuildingElement import BuildingElement
-from src.core_module.pem.IfcPEM import IfcPEM
+from core_module.graph.DesignGraph import DesignGraph
+from core_module.default.match_config import enrichment_feature_dict, transition_element_types
+from instance_classes.InstanceCollection import InstanceCollection
+from instance_classes.BuildingElement import BuildingElement
+from core_module.pem.IfcPEM import IfcPEM
 from typing import List
 import numpy as np
 

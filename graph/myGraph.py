@@ -3,12 +3,12 @@ import numpy as np
 from collections import namedtuple
 from plyfile import PlyData, PlyElement
 from pathlib import Path
-from core_module.default_config.config import sp_feature_translation_dict, int2color, enrichment_feature_dict, internali2internalt, internali2internalt_discipline
+from core_module.default.match_config import sp_feature_translation_dict, int2color, enrichment_feature_dict, internali2internalt, internali2internalt_discipline
 import copy
 import os
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-from core_module.default_config.config import discipline_wise_classes
+from core_module.default.match_config import discipline_wise_classes
 from core_module.utils_general.general_functions import invert_dict, invert_dict_simple
 
 
