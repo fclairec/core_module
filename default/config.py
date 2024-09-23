@@ -1,6 +1,5 @@
 import os.path as osp
 from yacs.config import CfgNode as CN
-from src.core_module.utils_general import common
 import yaml
 import copy
 
