@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from core_module.default_config.config import internali2internalt
+from core_module.default.match_config import internali2internalt
 
 
 def invert_dict(dict_in: dict) -> dict:
