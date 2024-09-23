@@ -126,6 +126,7 @@ class PEM:
     def save_pem(self, pem_file):
         pem_dict = {key: value for key, value in self.__dict__.items() if key not in ["mode", "inst_types_all"]}
         pem = pd.DataFrame(pem_dict)
+        pem.sort_values(by='guid_int', inplace=True)
         pem.to_csv(pem_file, index=False)
 
     def get_feature_vector(self, guids, feature_name):
