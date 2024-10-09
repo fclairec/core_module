@@ -29,6 +29,8 @@ _C.design.ifc_file.EL = "setup_default"
 _C.design.ifc_file.FUR = "setup_default"
 _C.design.ifc_file.Rest = "setup_default"
 
+_C.design.ifc_parsing_cfg = "ifc_parsing_dict_default"
+
 _C.design.disciplines = []
 
 _C.design.d_tol = CN()
@@ -56,6 +58,8 @@ _C.built.ifc_file.PLB = "setup_default"
 _C.built.ifc_file.EL = "setup_default"
 _C.built.ifc_file.FUR = "setup_default"
 _C.built.ifc_file.Rest = "setup_default"
+
+_C.built.ifc_parsing_cfg = "ifc_parsing_dict_default"
 
 _C.built.disciplines = []
 
