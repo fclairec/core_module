@@ -34,7 +34,7 @@ _C.design.ifc_parsing_cfg = "ifc_parsing_dict_default"
 _C.design.disciplines = []
 
 _C.design.d_tol = CN()
-_C.design.d_tol.elements = 0.2
+_C.design.d_tol.elements = 0.02 #(smaller than thinnest wall)
 _C.design.d_tol.face = 0.02  # 2cm
 _C.design.d_tol.merges = 0.05  # 2cm
 _C.design.n_tol = 0.9
@@ -64,7 +64,7 @@ _C.built.ifc_parsing_cfg = "ifc_parsing_dict_default"
 _C.built.disciplines = []
 
 _C.built.d_tol = CN()
-_C.built.d_tol.elements = 0.2
+_C.built.d_tol.elements = 0.02
 _C.built.d_tol.face = 0.02
 _C.built.d_tol.merges = 0.02
 _C.built.n_tol = 0.9

@@ -48,7 +48,7 @@ def get_space_graph(cfg, instance_collection: InstanceCollection):
 
     SpaceGraph = DesignGraph()
 
-    SpaceGraph.assemble_graph_files(cfg, "element", selected_guid_ints, False, False)
+    SpaceGraph.assemble_graph_files(cfg, "element", selected_guid_ints, True, False)
 
     enrichment_f = copy.deepcopy(enrichment_feature_dict)
     enrichment_f.pop("edge_length", None)

@@ -19,8 +19,19 @@ class DesignGraph(MyGraph):
         # TODO change for built
         if adjacency_type == "final":
             adjacency_file = cfg.final_adjacency_file
+            col_names = ["Start_node", "End_node", "distance", "Edge_type"]
+            adjacency = pd.read_csv(adjacency_file, sep=',', header=None, names=col_names)
         elif adjacency_type == "element":
-            adjacency_file = cfg.adjacency_file
+            # TODO unify the adjacency files to same format....
+            adjacency_file = cfg.containment_file
+            adjacency = pd.read_csv(adjacency_file, sep=',')
+            # stlit column "pair" into two columns
+            pairs = adjacency["pair"].str.replace("(", "").str.replace(")", "").str.split(", ", expand=True)
+            # make ints
+            pairs = pairs.astype(int)
+            pairs.columns = ["Start_node", "End_node"]
+            adjacency = pd.concat([adjacency, pairs], axis=1)
+
         else:
             raise ValueError("invalid adjacency type - graph can not be assembled")
 
@@ -29,8 +40,6 @@ class DesignGraph(MyGraph):
             features = pd.read_csv(features_file, sep=',', index_col="guid_int")
         else:
             features = None
-        col_names = ["Start_node", "End_node", "distance", "Edge_type"]
-        adjacency = pd.read_csv(adjacency_file, sep=',', header=None, names=col_names)
 
         if selected_guids != []:
             if features is not None:

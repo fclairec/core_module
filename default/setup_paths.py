@@ -15,6 +15,7 @@ def setup_paths(_C, ensure_paths=True):
     _c = getattr(_C, _C.mode)
 
     _c.root_dir = osp.join(_C.root_dir, _c.setup_name)
+    _c.instance_dir = osp.join(_c.root_dir, 'instance_geometry')
     _c.ifc_file_path = CN()
     _c.ifc_file_path.ALL = osp.join(_c.root_dir, _c.ifc_file.ALL)
     _c.ifc_file_path.ARC = osp.join(_c.root_dir, _c.ifc_file.ARC)
@@ -101,87 +102,6 @@ def setup_paths(_C, ensure_paths=True):
     else:
         raise ValueError("Invalid mode specified. Must be 'design' or 'built'.")
 
-
-    """_C.built.root_dir = osp.join(_C.root_dir, _C.built.setup_name)
-    _C.built.ifc_file_path = CN()
-    _C.built.ifc_file_path.ALL = osp.join(_C.built.root_dir, _C.built.ifc_file.ALL)
-    _C.built.ifc_file_path.ARC = osp.join(_C.built.root_dir, _C.built.ifc_file.ARC)
-    _C.built.ifc_file_path.VTL = osp.join(_C.built.root_dir, _C.built.ifc_file.VTL)
-    _C.built.ifc_file_path.PLB = osp.join(_C.built.root_dir, _C.built.ifc_file.PLB)
-    _C.built.ifc_file_path.EL = osp.join(_C.built.root_dir, _C.built.ifc_file.EL)
-    _C.built.ifc_file_path.FUR = osp.join(_C.built.root_dir, _C.built.ifc_file.FUR)
-    _C.built.ifc_file_path.Rest = osp.join(_C.built.root_dir, _C.built.ifc_file.Rest)"""
-
-
-
-    # prepare helios
-    """_C.built.waypoint_file = osp.join(_C.built.root_dir, "b_waypoints.csv")
-    _C.built.waypoint_selection_file = osp.join(_C.built.root_dir, 'b_waypoint_selection.obj')
-    _C.built.instances_pickle = osp.join(_C.built.root_dir, 'b_instances.pkl')
-    _C.built.shapes_pkl = osp.join(_C.built.root_dir, 'b_geometries.pkl')
-    _C.built.helios_simulation_file = CN()
-    _C.built.helios_simulation_file.ALL = osp.join(_C.built.root_dir, 'b_simulation_file.obj')
-    _C.built.helios_simulation_file.ARC = osp.join(_C.built.root_dir, 'b_simulation_file_arc.obj')
-    _C.built.helios_simulation_file.VTL = osp.join(_C.built.root_dir, 'b_simulation_file_vtl.obj')
-    _C.built.helios_simulation_file.PLB = osp.join(_C.built.root_dir, 'b_simulation_file_plb.obj')
-    _C.built.helios_simulation_file.EL = osp.join(_C.built.root_dir, 'b_simulation_file_el.obj')
-    _C.built.helios_simulation_file.FUR = osp.join(_C.built.root_dir, 'b_simulation_file_fur.obj')
-    _C.built.helios_simulation_file.Rest = osp.join(_C.built.root_dir, 'b_simulation_file_rest.obj')"""
-
-
-    """_C.built.adjacency_file = osp.join(_C.built.root_dir, 'b_adjacencies.csv')
-    _C.built.containment_file = osp.join(_C.built.root_dir, 'b_containments.csv')"""
-    """_C.built.pem_file = osp.join(_C.built.root_dir, "b_project_element_map.csv")"""
-
-
-
-    """_C.built.space_adj_file = osp.join(_C.built.root_dir, 'b_space_adj.csv')"""
-
-
-    """_C.built.instances_filename = osp.join(_C.built.root_dir, 'b_faces.obj')"""
-
-    """_C.built.space_graph = osp.join(_C.built.root_dir, 'only_space_graph.graphml')
-    _C.built.space_graph_viz = osp.join(_C.built.root_dir, 'only_space_graph.png')
-    _C.built.face_adjacency_file = osp.join(_C.built.root_dir, "b_face_adjacency.csv")
-    """
-
-    """_C.built.final_adjacency_file = osp.join(_C.built.root_dir, 'b_adjacencies_final.csv')"""
-
-
-
-    """# manual way point conversion
-    _C.built.manual_waypoints_selection = osp.join(_C.built.root_dir, _C.built.waypoints)
-
-
-
-    # helios simulation
-    _C.built.simulation.directory = osp.join(_C.built.root_dir, "helios")
-    _C.built.simulation.results_directory = osp.join(_C.built.simulation.directory, "results")
-    _C.built.simulation.total_pcd_filename = osp.join(_C.built.root_dir, "b_simulated_pcd.las")
-    _C.built.simulation.total_trajectory_filename = osp.join(_C.built.root_dir, "full_trajectory.txt")
-
-
-    # pcd_graph
-    _C.built.spg_file = osp.join(_C.built.root_dir, "spg.h5")
-    _C.built.pc_graph_file = osp.join(_C.built.root_dir, "my_graph.graphml")
-    _C.built.pc_graph_viz_file = osp.join(_C.built.root_dir, "b_my_graph.ply")
-    _C.built.node_color_legend_file = osp.join(_C.built.root_dir, "b_node_color_legend.png")
-    _C.built.b_downsampled_pcd = osp.join(_C.built.root_dir, "b_downsampled_pcd.ply")
-    _C.built.features_file = osp.join(_C.built.root_dir,"b_features.csv")
-
-
-    # make dataset splits
-    _C.built.splits = CN()
-    _C.built.splits.dir_template = osp.join(_C.built.root_dir, "split_{}_{}_{}_{}") #subset key, room_nb, rotation(x30/y30), translation(x10,x-10)
-    _C.built.splits.dirs = []
-    _C.built.splits.split_pcd = "pcd.las"
-    _C.built.splits.split_pem = "project_element_map.csv"
-    _C.built.splits.split_feat = "features.csv"
-    _C.built.splits.split_spg = "spg.h5"
-    _C.built.splits.split_viz = "my_graph.ply"
-    _C.built.splits.split_graph = "my_graph.graphml"
-    _C.built.splits.split_cfg_log = "cfg.log"""
-
     if ensure_paths:
         s = create_paths(_C)
         if s == 0:
@@ -199,6 +119,7 @@ def create_paths(cfg):
     if not osp.exists(cfg.log_dir):
         common.ensure_dir(cfg.log_dir)
 
+
     #mode = "d" if cfg.design.setup_name != "setup_default" elif cfg.built.setup_name != "setup_default" else None
     mode = "design" if cfg.design.setup_name != "setup_default" else "built" if cfg.built.setup_name != "setup_default" else None
     if mode is None:
@@ -210,6 +131,8 @@ def create_paths(cfg):
         return 0
     else:
         common.ensure_dir(cfg_s.root_dir)
+        common.ensure_dir(cfg_s.instance_dir)
+
         # copy ifc
         for ifc in cfg_s.ifc_file:
             file_name = getattr(cfg_s.ifc_file, ifc)

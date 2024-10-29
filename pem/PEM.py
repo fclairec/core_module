@@ -6,7 +6,7 @@ import ast
 class PEM:
     def __init__(self, mode="default"):
         self.mode = mode
-        self.inst_types_all = ["element", "face", "aggregate", "space", "rewritten", "spanning", "segment"]
+        self.inst_types_all = ["element", "face", "aggregate", "space", "opening", "rewritten", "spanning", "segment"]
         self.guid_int = []
         self.type_int = []
         self.type_txt = []

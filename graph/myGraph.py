@@ -39,6 +39,7 @@ class MyGraph():
             elif enrichment_task == 'room':
                 features = pem.get_feature_vector(graph_node_ids, feature_name)
                 nx.set_node_attributes(self.graph, dict(zip(graph_node_ids, features)), enrichment_task)
+
             elif enrichment_task == 'color':
                 features = pem.get_feature_vector(graph_node_ids, "type_int")
                 colors = [int2color[feature] for feature in features]
@@ -238,14 +239,21 @@ class MyGraph():
         :return:
         """
         import matplotlib.pyplot as plt
+        import networkx as nx
 
-        nx.draw(self.graph, pos=nx.spring_layout(self.graph), with_labels=True)
+        plt.clf()
+
+        node_colors_normalized = [[c / 255.0 for c in data['color'][:3]] for _, data in self.graph.nodes(data=True)]
+        pos_from_cp = {node: (data['cp_x'], data['cp_y']) for node, data in self.graph.nodes(data=True)}
+
+        nx.draw(self.graph, pos=pos_from_cp, with_labels=True, node_color=node_colors_normalized)
         plt.draw()
         plt.title(title)
 
         if save_file:
             plt.savefig(save_file)
-
+        else:
+            plt.show()
 
         """node_and_x = nx.get_node_attributes(self.graph, "cp_x")
         node_and_y = nx.get_node_attributes(self.graph, "cp_y")

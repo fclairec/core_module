@@ -30,6 +30,7 @@ internali2internalt = {
     24: 'Space',
     25: 'SpaceHeater',
     26: 'Proxy',
+    27: 'Opening',
     999: 'other'
 }
 
@@ -51,7 +52,7 @@ discipline_wise_classes = {
     "VTL": ["Duct", "Air terminal"],
     "EL": ["Light", "Alarm", "Sensor", "Outlet", "Switch"],
     "FUR": ["Table", "Chair", "Bookshelf", "Appliance"],
-    "Rest": ["Space"]
+    "Rest": ["Space", "Opening"]
 }
 
 # geometric features are calculated from a cluster of points and become attributes of the spg. The following dictionary translates the
@@ -100,6 +101,7 @@ int2color = {
     24: [200, 162, 89, 1.0],
     25: [121, 107, 0, 1.0],
     26: [0, 0, 0, 1.0],
+    27: [255, 255, 255, 1.0],
     999: [128, 60, 21, 1.0]
 }
 
