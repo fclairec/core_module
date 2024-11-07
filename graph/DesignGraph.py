@@ -22,7 +22,7 @@ class DesignGraph(MyGraph):
             col_names = ["Start_node", "End_node", "distance", "Edge_type"]
             adjacency = pd.read_csv(adjacency_file, sep=',', header=None, names=col_names)
         elif adjacency_type == "element":
-            # TODO unify the adjacency files to same format....
+            # TODO unify the adjacency files to same format.... add the case where no adjacencies
             adjacency_file = cfg.containment_file
             adjacency = pd.read_csv(adjacency_file, sep=',')
             # stlit column "pair" into two columns

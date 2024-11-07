@@ -31,6 +31,7 @@ internali2internalt = {
     25: 'SpaceHeater',
     26: 'Proxy',
     27: 'Opening',
+    28: 'Bed',
     999: 'other'
 }
 
@@ -51,7 +52,7 @@ discipline_wise_classes = {
     "PLB": ["Pipe", "Sink", "Toilet", "Sprinkler", "Tank"],
     "VTL": ["Duct", "Air terminal"],
     "EL": ["Light", "Alarm", "Sensor", "Outlet", "Switch"],
-    "FUR": ["Table", "Chair", "Bookshelf", "Appliance"],
+    "FUR": ["Table", "Chair", "Bookshelf", "Appliance", "Bed"],
     "Rest": ["Space", "Opening"]
 }
 
