@@ -143,7 +143,18 @@ class PCD:
 
 
 
-    def output_point_cloud_las(self, downsampled_file_name):
+    def output_point_cloud_las(self, downsampled_file_name, output_level="model", instance_dir=None):
+        if output_level == "model":
+            self._las_assembly(self.points, self.instance_labels, self.type_int, self.discipline_int, downsampled_file_name)
+        elif output_level == "instance":
+            for id, idxs in self.point_indices_per_instance.items():
+                file_name = Path(instance_dir) / f"{id}.las"
+                if self.discipline_int is not None:
+                    self._las_assembly(self.points[idxs], self.instance_labels[idxs], self.type_int[idxs], self.discipline_int[idxs], file_name)
+                else:
+                    self._las_assembly(self.points[idxs], self.instance_labels[idxs], self.type_int[idxs], None, file_name)
+
+    def _las_assembly(self, points, instance_labels, type_int, discipline_int, file_name):
 
         # Create a new LAS file
         header = laspy.LasHeader(version="1.4", point_format=6)
@@ -152,24 +163,24 @@ class PCD:
         las = laspy.LasData(header)
 
         # Assign point coordinates
-        las.x = self.points[:, 0]
-        las.y = self.points[:, 1]
-        las.z = self.points[:, 2]
+        las.x = points[:, 0]
+        las.y = points[:, 1]
+        las.z = points[:, 2]
 
         # Assign instance labels (s) and type_int (s1) and discipline (s2)
         las.add_extra_dim(laspy.ExtraBytesParams(name="instance", type=np.int32))
         las.add_extra_dim(laspy.ExtraBytesParams(name="type", type=np.int32))
 
-        las.instance = self.instance_labels[:, 0]
-        las.type = self.type_int
+        las.instance = instance_labels[:, 0]
+        las.type = type_int
 
-        if self.discipline_int is not None:
+        if discipline_int is not None:
             las.add_extra_dim(laspy.ExtraBytesParams(name="discipline", type=np.int32))
-            las.discipline = self.discipline_int
+            las.discipline = discipline_int
 
 
         # Write the LAS file
-        las.write(downsampled_file_name)
+        las.write(file_name)
 
 
     def to_spg_format(self, computed_clusters=None):
