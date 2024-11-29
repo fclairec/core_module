@@ -144,7 +144,7 @@ def create_paths(cfg):
 
         if mode == "built":
             # copy waypoints
-            waypoint_file = osp.join(cfg.waypoint_pool, cfg.building_project+f"_{cfg.built.waypoints}")
+            waypoint_file = osp.join(cfg.waypoint_pool, cfg.built.waypoints)
             shutil.copy(waypoint_file, cfg.built.manual_waypoints_selection)
 
 
