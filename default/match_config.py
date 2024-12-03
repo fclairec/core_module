@@ -124,6 +124,15 @@ epsilon_threshold = {
     'Rest': 0.5,
 }
 
+deviation_colors = {
+    'position': [255, 0, 0, 1.0],
+    'rotation': [0, 255, 0, 1.0],
+    'shape': [0, 0, 255, 1.0],
+    'new': [255, 255, 0, 1.0],
+    'missing'   : [0, 255, 255, 1.0],
+    'none': [200, 200, 200, 1.0],
+}
+
 
 
 def get_int2discipline(ifc_parsing_dict):

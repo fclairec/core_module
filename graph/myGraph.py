@@ -300,3 +300,14 @@ class MyGraph():
                         nodes_to_delete.append(node)
         self.graph.remove_nodes_from(nodes_to_delete)
         return len(nodes_to_delete)
+
+    def transform_node_positions(self, transformation_matrix):
+        """transforms the graph. The transformation matrix is a 4x4 matrix"""
+        for node in self.graph.nodes:
+            pos = np.array([self.graph.nodes[node]["cp_x"], self.graph.nodes[node]["cp_y"], self.graph.nodes[node]["cp_z"], 1])
+            new_pos = np.dot(pos, transformation_matrix.T)
+            self.graph.nodes[node]["cp_x"] = new_pos[0]
+            self.graph.nodes[node]["cp_y"] = new_pos[1]
+            self.graph.nodes[node]["cp_z"] = new_pos[2]
+
+

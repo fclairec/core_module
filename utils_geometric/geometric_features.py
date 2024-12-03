@@ -63,3 +63,31 @@ def pca_and_extents(pcd, bbox):
 
     return np.concatenate([components.flatten(), lengths])
 
+def transform_features(features, apply_transform):
+    features[["cp_x", "cp_y", "cp_z"]] = np.dot(features[["cp_x", "cp_y", "cp_z"]],
+                                                apply_transform[:3, :3].T) + apply_transform[:3, 3]
+    # change normals and pca
+    features[["normal_x", "normal_y", "normal_z"]] = np.dot(features[["normal_x", "normal_y", "normal_z"]],
+                                                            apply_transform[:3, :3].T)
+    features[["pca1x", "pca1y", "pca1z"]] = np.dot(features[["pca1x", "pca1y", "pca1z"]], apply_transform[:3, :3].T)
+    features[["pca2x", "pca2y", "pca2z"]] = np.dot(features[["pca2x", "pca2y", "pca2z"]], apply_transform[:3, :3].T)
+    features[["pca3x", "pca3y", "pca3z"]] = np.dot(features[["pca3x", "pca3y", "pca3z"]], apply_transform[:3, :3].T)
+    return features
+
+
+def transform_geometric_graph(graph, apply_transform):
+    # graph (networkx contains nodes attributes cp_x, cp_y, cp_z
+    graph_t = graph.copy()
+    for node in graph.nodes:
+        node_data = graph.nodes[node]
+        node_data["cp_x"], node_data["cp_y"], node_data["cp_z"] = np.dot([node_data["cp_x"], node_data["cp_y"], node_data["cp_z"]],
+                                                                         apply_transform[:3, :3].T) + apply_transform[:3, 3]
+        """# change normals and pca
+        node_data["normal_x"], node_data["normal_y"], node_data["normal_z"] = np.dot([node_data["normal_x"], node_data["normal_y"], node_data["normal_z"]],
+                                                                                     apply_transform[:3, :3].T)
+        node_data["pca1x"], node_data["pca1y"], node_data["pca1z"] = np.dot([node_data["pca1x"], node_data["pca1y"], node_data["pca1z"]], apply_transform[:3, :3].T)
+        node_data["pca2x"], node_data["pca2y"], node_data["pca2z"] = np.dot([node_data["pca2x"], node_data["pca2y"], node_data["pca2z"]], apply_transform[:3, :3].T)
+        node_data["pca3x"], node_data["pca3y"], node_data["pca3z"] = np.dot([node_data["pca3x"], node_data["pca3y"], node_data["pca3z"]], apply_transform[:3, :3].T)"""
+
+
+    return graph_t
