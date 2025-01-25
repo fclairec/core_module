@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import ast
 from core_module.default.match_config import internali2internalt
 
 
@@ -133,3 +134,18 @@ def from_open3d(point_cloud):
     labels = labels.astype(int).reshape((-1, 1))
 
     return points, labels, colors
+
+def split_custom_string(in_string, out_type = "int"):
+
+    if out_type == "int":
+        if in_string.startswith("[") and in_string.endswith("]"):
+            parent_guid_int_ref = list(map(int, in_string.strip("[]").split(",")))
+        else:
+            parent_guid_int_ref = [int(float(in_string))]
+    elif out_type == "str":
+        if in_string.startswith("[") and in_string.endswith("]"):
+            parent_guid_int_ref = ast.literal_eval(in_string)
+        else:
+            parent_guid_int_ref = [in_string]
+
+    return parent_guid_int_ref

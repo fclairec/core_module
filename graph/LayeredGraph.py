@@ -1,5 +1,5 @@
 
-from core_module.default_config.config import internali2internalt_discipline
+from core_module.default.match_config import internali2internalt_discipline
 from core_module.graph.myGraph import MyGraph
 from core_module.utils_general.general_functions import invert_dict_simple
 
