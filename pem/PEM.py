@@ -25,6 +25,7 @@ class PEM:
         self.pcd = []
         self.match_id = []
         self.ifc_properties = []
+        self.has_points = []
 
     def update(self, **kwargs):
         self.check_minimum_attr(kwargs)
@@ -124,7 +125,7 @@ class PEM:
 
 
     def save_pem(self, pem_file):
-        pem_dict = {key: value for key, value in self.__dict__.items() if key not in ["mode", "inst_types_all"]}
+        pem_dict = {key: value for key, value in self.__dict__.items() if key not in ["mode", "inst_types_all", "pc_type"]}
         pem = pd.DataFrame(pem_dict)
         pem.sort_values(by='guid_int', inplace=True)
         pem.to_csv(pem_file, index=False)

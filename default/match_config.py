@@ -4,6 +4,7 @@ transition_element_types = ['Door', 'Window', 'Stair']
 
 
 internali2internalt = {
+    0: 'Clutter',
     1: 'Wall',
     2: 'Floor',
     3: 'Ceiling',
@@ -77,6 +78,7 @@ enrichment_feature_dict = {
 }
 
 int2color = {
+    0: [190,190,190, 1.0],
     1: [112, 48, 160, 1.0],
     2: [0, 0, 255, 1.0],
     3: [124, 130, 0, 1.0],

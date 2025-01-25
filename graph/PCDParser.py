@@ -7,6 +7,8 @@ from core_module.pem.PcPEM import PcPEM
 from plyfile import PlyData, PlyElement
 from pathlib import Path
 import laspy
+import copy
+
 
 
 """DIR_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -123,6 +125,52 @@ class PCD:
         self.preprocessing_steps_performed.append(f'downsampled_{voxel_size}')
         self._update_point_indices_per_instance(np.unique(self.instance_labels), drop_old=True)
         a=0
+
+    def devide_instances_by_clustering(self, pem_file):
+        pem = PcPEM(self.pc_type)
+        pem.load_pem(pem_file)
+        point_indices_per_instance_new = {}
+        point_idx_to_remove = []
+        points = []
+        instances = []
+        for id, idxs in self.point_indices_per_instance.items():
+            pcd = self.points[idxs]
+            o3d_pcd = to_open3d(pcd, np.ones((len(pcd), 1))*id)
+            clusters = np.array(o3d_pcd.cluster_dbscan(eps=0.2, min_points=50, print_progress=True))
+            clusters_u = np.unique(clusters)
+            # all except cluster -1
+            clusters_u = clusters_u[clusters_u != -1]
+            for i, cluster_id in enumerate(clusters_u):
+                pts_in_cluster = np.where(clusters == cluster_id)[0]
+                # instanciate new instance.
+                new_id = pem.assign_new_guid()
+
+                new_instance = copy.deepcopy(pem.get_instance_entry(id))
+                new_instance["guid_int"] = new_id
+                pem.add_instance_entry(new_instance)
+
+                # update self.point_indices_per_instance
+                point_indices_per_instance_new[new_id] = pts_in_cluster + len(points)
+                # update instance_labels
+                #self.instance_labels[idxs[pts_in_cluster]] = np.reshape(np.ones(len(pts_in_cluster))*int(new_id), (-1, 1))
+                # update points
+                points.append(pcd[pts_in_cluster])
+                instances.append(np.reshape(np.ones(len(pts_in_cluster))*int(new_id), (-1, 1)))
+            # we have to remove the points that do not fit into a cluster
+            #clust_minus_1 = np.where(clusters == -1)[0]
+            #point_idx_to_remove.extend(idxs[clust_minus_1])
+
+
+            # delete old instance
+            #self.point_indices_per_instance.pop(id)
+            pem.remove_instance_entry(id)
+        self.point_indices_per_instance = point_indices_per_instance_new
+        self.points = np.vstack(points)
+        self.instance_labels = np.vstack(instances)
+        #self.points = np.delete(self.points, point_idx_to_remove, axis=0)
+        #self.instance_labels = np.delete(self.instance_labels, point_idx_to_remove, axis=0)
+        pem.save_pem(pem_file)
+
 
     def add_scalars_from_pem(self, pem_file, values):
         pem = PcPEM(self.pc_type)

@@ -22,7 +22,7 @@ class PcPEM(PEM):
 
     def remove_instance(self, position):
         for key in self.__dict__.keys():
-            if key in ["mode", "inst_types_all"]:
+            if key in ["mode", "inst_types_all", "pc_type"]:
                 continue
             attr = getattr(self, key)
             attr.pop(position)
@@ -51,6 +51,28 @@ class PcPEM(PEM):
             for drop_id in drop_ids:
                 self.remove_instance_entry(drop_id)
         # TODO remove spg_labels that are not on old_new
+
+    def add_has_points(self, has_points: dict):
+        for guid, has_point in has_points.items():
+            self.update_instance_attribute(guid, "has_points", has_point)
+
+
+    def declare_clutter(self, asquisition_rooms):
+        """ clutter are all instances whoes room id is not in the asquisition room list"""
+        clutter = []
+        for guid_int in self.guid_int:
+            rooms = self.room_id[self.guid_int.index(guid_int)] # string list of room ids
+            # parse room ids with eval
+            if type(rooms) == str:
+                rooms = eval(rooms)
+
+            if not any(room in asquisition_rooms for room in rooms):
+                # if none of the rooms the instance is part of is in the asquisition rooms, it is clutter
+                # set type_txt to clutter and type_int to 0
+                self.update_instance_attribute(guid_int, type_txt="clutter", type_int=0)
+
+        a=0
+
 
     def __str__(self):
         base_str = super().__str__()
