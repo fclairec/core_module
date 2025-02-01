@@ -3,8 +3,7 @@ import copy
 import pandas as pd
 from core_module.graph.DesignGraph import DesignGraph
 from core_module.default.match_config import enrichment_feature_dict, transition_element_types
-from instance_classes.InstanceCollection import InstanceCollection
-from instance_classes.BuildingElement import BuildingElement
+from core_module.utils_general.InstanceCollection import InstanceCollection
 from core_module.pem.IfcPEM import IfcPEM
 from typing import List
 import numpy as np
@@ -19,7 +18,7 @@ def helios_waypoint_assignment(cfg, instance_collection: InstanceCollection):
     waypoints.to_csv(cfg.waypoint_file, index=False, header=True)
 
 
-def get_containment_ray_trace(potential_host_instances: List[BuildingElement],
+def get_containment_ray_trace(potential_host_instances,
                               potential_guest_instances: pd.DataFrame) -> np.ndarray:
     """ takes a list of building instances, and a dataframe of points and checks for containment with the trimesh ray trace method
     :param potential_host_instances: list of building instances that are potentially hosts

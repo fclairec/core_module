@@ -2,7 +2,7 @@ from core_module.default.match_config import feature_tasks
 from core_module.utils_geometric.geometric_features import get_geometric_features
 import pandas as pd
 from core_module.default.match_config import sp_feature_translation_dict
-from instance_classes.InstanceCollection import InstanceCollection
+from core_module.utils_general.InstanceCollection import InstanceCollection
 
 def geom_features_to_file(cfg, instances: InstanceCollection, exists=True):
     # calculation of the geometric features (not to store the whole geometry (difficult to pickle, not stable))

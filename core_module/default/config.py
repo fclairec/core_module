@@ -8,10 +8,10 @@ import copy
 _C = CN()
 _C.seed = 42
 
-_C.root_root_dir = '/home/appuser/input_data/data'
-_C.ifc_pool = '/home/appuser/input_data/ifc_models'
-_C.waypoint_pool = '/home/appuser/input_data/waypoint_files'
-_C.real_point_cloud_pool = '/home/appuser/input_data/real_point_clouds'
+_C.root_root_dir = '/media/fio/Daten 1/scanbim/data'
+_C.ifc_pool = '/media/fio/Daten 1/scanbim/ifc_models'
+_C.waypoint_pool = '/media/fio/Daten 1/scanbim/waypoint_files'
+_C.real_point_cloud_pool = '/media/fio/Daten 1/scanbim/real_point_clouds'
 _C.building_project = "A"
 _C.mode = "d"
 
