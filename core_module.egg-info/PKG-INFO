@@ -1,21 +1,18 @@
-Metadata-Version: 2.2
-Name: core_module
+Metadata-Version: 2.1
+Name: core-module
 Version: 0.1.0
 Summary: A reusable core module for pipelines
 Home-page: https://github.com/fclairec/core_module
 Author: Your Name
+License: UNKNOWN
+Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Operating System :: OS Independent
 Requires-Python: >=3.6
 Description-Content-Type: text/markdown
-Dynamic: author
-Dynamic: classifier
-Dynamic: description
-Dynamic: description-content-type
-Dynamic: home-page
-Dynamic: requires-python
-Dynamic: summary
 
 # core_module
 functions and classes used in different other repositories
+
+
