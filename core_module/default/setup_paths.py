@@ -165,8 +165,9 @@ def update_config_value(cfg, cfg_args, ensure_dir=True):
 
 def save_cfg_to_yaml(cfg, file_path):
     with open(file_path, 'w') as f:
+        cfg_str = yaml.safe_load(cfg.dump())
         # Convert CfgNode to dictionary and dump as YAML
-        yaml.safe_dump(cfg.dump(), f, default_flow_style=False)
+        yaml.safe_dump(cfg_str, f, default_flow_style=False, sort_keys=False, allow_unicode=True, indent=2)
 
 
 def load_cfg_from_yaml(file_path):
